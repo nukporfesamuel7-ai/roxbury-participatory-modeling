@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heat & Flooding in Roxbury – Participatory Modeling</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --green: #2d6a4f; --teal: #40916c; --light: #d8f3dc;
+    --accent: #e76f51; --dark: #1b1b2f; --gray: #f4f4f4; --text: #222;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Georgia', serif; color: var(--text); background: #fff; }
+
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    background: rgba(27,27,47,0.96); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 1.5rem; height: 54px;
+  }
+  nav .logo { color: #fff; font-size: .9rem; font-weight: bold; letter-spacing: 1px; white-space:nowrap; }
+  nav ul { list-style: none; display: flex; gap: 1.2rem; flex-wrap:wrap; }
+  nav ul a { color: #ccc; text-decoration: none; font-size: .78rem; font-family: sans-serif; transition: color .2s; }
+  nav ul a:hover { color: #fff; }
+  #progress { position: fixed; top: 54px; left: 0; height: 3px; background: var(--accent); width: 0%; z-index: 99; transition: width .1s; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #1b1b2f 0%, #2d6a4f 60%, #40916c 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem 4rem; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-tag { display: inline-block; background: var(--accent); color: #fff; font-family: sans-serif; font-size: .75rem; letter-spacing: 2px; padding: .3rem 1rem; border-radius: 20px; margin-bottom: 1.5rem; text-transform: uppercase; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); color: #fff; line-height: 1.2; max-width: 800px; margin-bottom: 1rem; }
+  .hero h1 span { color: #b7e4c7; }
+  .hero p { color: #b7e4c7; font-size: 1.1rem; max-width: 620px; line-height: 1.7; margin-bottom: 2rem; }
+  .hero-meta { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2.5rem; }
+  .hero-meta span { color: #d8f3dc; font-size: .82rem; font-family: sans-serif; }
+  .hero-meta span b { color: #fff; }
+  .scroll-btn { display: inline-flex; align-items: center; gap: .5rem; background: transparent; border: 2px solid #b7e4c7; color: #b7e4c7; padding: .7rem 1.8rem; border-radius: 30px; font-family: sans-serif; font-size: .9rem; cursor: pointer; text-decoration: none; transition: all .3s; }
+  .scroll-btn:hover { background: #b7e4c7; color: var(--dark); }
+  .scroll-arrow { animation: bounce 1.5s infinite; display: block; margin: 2rem auto 0; color: #b7e4c7; font-size: 1.5rem; }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+
+  section { padding: 5rem 2rem; }
+  .container { max-width: 940px; margin: 0 auto; }
+  .section-label { display: inline-block; font-family: sans-serif; font-size: .75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); border-left: 3px solid var(--teal); padding-left: .6rem; margin-bottom: 1rem; }
+  h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); color: var(--dark); margin-bottom: 1rem; line-height: 1.3; }
+  h3 { font-size: 1.15rem; color: var(--green); margin: 1.8rem 0 .6rem; }
+  p { line-height: 1.8; margin-bottom: 1rem; color: #333; }
+  .callout { background: var(--light); border-left: 4px solid var(--teal); padding: 1.2rem 1.5rem; border-radius: 0 8px 8px 0; margin: 1.5rem 0; }
+  .callout p { margin: 0; font-style: italic; color: #2d6a4f; }
+  .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .why-card { background: var(--gray); border-radius: 10px; padding: 1.2rem; border-top: 3px solid var(--teal); }
+  .why-card .icon { font-size: 1.5rem; margin-bottom: .4rem; }
+  .why-card h4 { font-size: .9rem; color: var(--dark); margin-bottom: .3rem; font-family: sans-serif; }
+  .why-card p { font-size: .85rem; margin: 0; color: #555; line-height: 1.6; }
+  .badge-row { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
+  .badge { background: var(--light); border: 1px solid var(--teal); color: var(--green); border-radius: 20px; padding: .25rem .8rem; font-size: .8rem; font-family: sans-serif; }
+  .wave-divider { width: 100%; overflow: hidden; line-height: 0; }
+
+  /* DIAGRAM IMAGES */
+  .diagram-wrap {
+    background: #fff; border: 1px solid #e0e0e0; border-radius: 12px;
+    padding: 1rem; margin: 1.5rem 0;
+    box-shadow: 0 2px 16px rgba(0,0,0,.06);
+    text-align: center;
+  }
+  .diagram-wrap img { max-width: 100%; border-radius: 8px; display: block; margin: 0 auto; }
+  .diagram-caption { font-family: sans-serif; font-size: .78rem; color: #888; margin-top: .6rem; text-align: center; }
+
+  /* STAKEHOLDER SECTION */
+  #problem { background: #fff; }
+
+  /* PHOTOVOICE */
+  #photovoice { background: #fafafa; }
+  .step-list { counter-reset: steps; list-style: none; margin: 1.2rem 0; }
+  .step-list li { counter-increment: steps; display: flex; gap: 1rem; align-items: flex-start; padding: .9rem 0; border-bottom: 1px solid #eee; }
+  .step-list li::before { content: counter(steps); background: var(--teal); color: #fff; border-radius: 50%; min-width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; font-family: sans-serif; font-weight: bold; font-size: .85rem; flex-shrink: 0; }
+  .step-list li div strong { display: block; color: var(--dark); margin-bottom: .15rem; font-family: sans-serif; font-size: .9rem; }
+  .step-list li div span { font-size: .87rem; color: #555; line-height: 1.6; }
+  .timeline-bar { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.2rem 0; }
+  .tbar { background: var(--green); color: #fff; border-radius: 6px; padding: .4rem .8rem; font-family: sans-serif; font-size: .78rem; }
+  .tbar span { display: block; font-size: .68rem; opacity: .75; }
+
+  /* CLD */
+  #cld { background: #fff; }
+  .story-card { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 1.3rem; margin: 1rem 0; border-left: 4px solid var(--accent); transition: box-shadow .2s; }
+  .story-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.08); }
+  .story-card h4 { font-family: sans-serif; color: var(--dark); margin-bottom: .4rem; font-size: .98rem; }
+  .story-card p { font-size: .88rem; color: #555; line-height: 1.7; margin: 0; }
+  .loop-tag { display: inline-block; background: #fde8e0; color: var(--accent); border-radius: 4px; font-size: .7rem; padding: .12rem .45rem; font-family: sans-serif; margin-bottom: .4rem; }
+  .formula { background: var(--dark); color: #b7e4c7; border-radius: 8px; padding: .9rem 1.2rem; font-family: monospace; font-size: .85rem; margin: .8rem 0; line-height: 2; }
+  .formula .arr { color: var(--accent); }
+
+  /* COMMUNITY MAP */
+  #communitymap { background: #f4f4f4; }
+  .map-preview { border-radius: 12px; overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,.15); margin: 1.5rem 0; cursor: pointer; position: relative; }
+  .map-preview:hover { box-shadow: 0 12px 50px rgba(0,0,0,.2); }
+  .map-click-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,.6); padding: .75rem; text-align: center; }
+  .map-click-overlay span { color: #fff; font-family: sans-serif; font-size: .85rem; }
+
+  /* STORYMAP */
+  #storymap { background: var(--dark); color: #fff; }
+  #storymap h2 { color: #fff; }
+  #storymap p { color: #b7e4c7; }
+  .storymap-link { display: inline-flex; align-items: center; gap: .6rem; background: var(--accent); color: #fff; text-decoration: none; padding: .9rem 2rem; border-radius: 30px; font-family: sans-serif; font-size: 1rem; margin-top: 1rem; transition: opacity .2s; }
+  .storymap-link:hover { opacity: .85; }
+
+  /* TEAM */
+  #team { background: var(--gray); }
+  .team-grid { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.2rem; }
+  .team-card { background: #fff; border-radius: 10px; padding: 1.1rem 1.3rem; flex: 1 1 180px; border-top: 3px solid var(--teal); }
+  .team-card h4 { font-family: sans-serif; color: var(--dark); margin-bottom: .25rem; font-size: .95rem; }
+  .team-card p { font-size: .82rem; color: #666; margin: 0; }
+
+  footer { background: var(--dark); color: #888; text-align: center; padding: 2rem; font-family: sans-serif; font-size: .8rem; }
+  footer a { color: var(--teal); text-decoration: none; }
+
+  /* Tabs for diagrams */
+  .tab-row { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .tab-btn { background: #eee; border: none; border-radius: 6px 6px 0 0; padding: .5rem 1rem; font-family: sans-serif; font-size: .8rem; cursor: pointer; color: #555; transition: all .2s; }
+  .tab-btn.active { background: var(--teal); color: #fff; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<nav>
+  <span class="logo">🌿 Roxbury Participatory Modeling</span>
+  <ul>
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#photovoice">Photovoice</a></li>
+    <li><a href="#cld">CLD</a></li>
+    <li><a href="#communitymap">Map</a></li>
+    <li><a href="#storymap">StoryMap</a></li>
+    <li><a href="#team">Team</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <span class="hero-tag">PPUA 5246 · Participatory Modeling · Northeastern University</span>
+  <h1>Heat & Flooding Inequities in <span>Roxbury's Dudley Street</span></h1>
+  <p>A community-centered participatory modeling project exploring how extreme heat and localized flooding shape daily life in Roxbury — and how residents can drive change.</p>
+  <div class="hero-meta">
+    <span><b>Community Partner:</b> DSNI</span>
+    <span><b>School Partner:</b> Boston Latin Academy</span>
+    <span><b>Methods:</b> Photovoice · Causal Loop Diagramming</span>
+    <span><b>Team:</b> Nukporfe · Sharifi · Bandeira</span>
+  </div>
+  <a href="#problem" class="scroll-btn">Explore the Project ↓</a>
+  <span class="scroll-arrow">↓</span>
+</section>
+
+<!-- ══ 01 PROBLEM ══ -->
+<section id="problem">
+  <div class="container">
+    <span class="section-label">01 · Problem Definition</span>
+    <h2>Why Roxbury? Why Now?</h2>
+    <p>The Roxbury and Dudley Street area experiences recurring extreme heat and localized flooding, producing environmental and public health stresses that shape daily life. These challenges reflect long-standing patterns of disinvestment, land-use decisions, and uneven public investment that continue to structure environmental vulnerability.</p>
+
+    <div class="callout">
+      <p>"Heat waves and intense rainfall events are becoming more frequent, but their impacts are unevenly experienced. Some residents, households, and streets bear a disproportionate share of these burdens."</p>
+    </div>
+
+    <div class="why-grid">
+      <div class="why-card"><div class="icon">🌡️</div><h4>Extreme Heat</h4><p>Disproportionately affects Roxbury due to lack of tree canopy, impervious surfaces, and aging housing stock.</p></div>
+      <div class="why-card"><div class="icon">🌊</div><h4>Urban Flooding</h4><p>Old infrastructure and blocked drains combine with more intense storms, flooding streets, basements, and parks.</p></div>
+      <div class="why-card"><div class="icon">⚖️</div><h4>Environmental Justice</h4><p>Long histories of disinvestment mean these climate stressors land hardest on low-income residents and communities of color.</p></div>
+      <div class="why-card"><div class="icon">🤝</div><h4>Community Knowledge</h4><p>Lived experience holds answers that technical datasets miss — this project centers youth and community voice as essential evidence.</p></div>
+    </div>
+
+    <h3>Stakeholder Mind Map</h3>
+    <p>We began by mapping all groups connected to heat and flooding in Roxbury. The mind map below captures the breadth of stakeholders — from community members and local organizations to government offices and academic institutions.</p>
+    <div class="diagram-wrap">
+      <img src="https://i.imgur.com/placeholder.png" 
+           id="img-mindmap"
+           alt="Stakeholder Mind Map – Heat and Flood in Roxbury"
+           style="max-width:580px;"
+           onerror="this.parentElement.innerHTML=getMindmapSVG()">
+      <div class="diagram-caption">Figure 1 · Stakeholder Mind Map — Heat and Flood in Roxbury</div>
+    </div>
+
+    <h3>Stakeholder Prioritization: Power, Legitimacy & Urgency</h3>
+    <p>Not all stakeholders can be engaged equally. Using the Power–Legitimacy–Urgency framework (Mitchell, Agle & Wood, 1997), we prioritized groups based on their lived experience, ability to influence outcomes, and immediacy of need. Those at the intersection of all three dimensions — Roxbury residents — are the highest priority.</p>
+    <div class="diagram-wrap">
+      <img src="https://i.imgur.com/placeholder2.png"
+           id="img-venn"
+           alt="Power Legitimacy Urgency Venn Diagram"
+           style="max-width:480px;"
+           onerror="this.parentElement.innerHTML=getVennSVG()">
+      <div class="diagram-caption">Figure 2 · Power–Legitimacy–Urgency Framework — Stakeholder Prioritization</div>
+    </div>
+
+    <h3>Stakeholder Network: Who Connects to Whom</h3>
+    <p>DSNI sits at the center of the stakeholder network as a trusted community anchor, connecting residents, government, schools, and academic partners. Arrows show the direction of influence and information flow.</p>
+    <div class="diagram-wrap">
+      <img src="https://i.imgur.com/placeholder3.png"
+           id="img-network"
+           alt="Stakeholder Network Diagram"
+           style="max-width:560px;"
+           onerror="this.parentElement.innerHTML=getNetworkSVG()">
+      <div class="diagram-caption">Figure 3 · Stakeholder Network — DSNI as Community Anchor</div>
+    </div>
+
+    <h3>Key Stakeholders</h3>
+    <div class="badge-row">
+      <span class="badge">Roxbury Residents</span>
+      <span class="badge">Boston Latin Academy Students</span>
+      <span class="badge">DSNI</span>
+      <span class="badge">The Food Project Roxbury</span>
+      <span class="badge">City of Boston / Mayor's Office</span>
+      <span class="badge">MBTA</span>
+      <span class="badge">Northeastern University</span>
+      <span class="badge">Small Business Owners</span>
+      <span class="badge">PM Class Facilitators</span>
+      <span class="badge">Prof. Moira Zellner</span>
+    </div>
+  </div>
+</section>
+
+<div class="wave-divider"><svg viewBox="0 0 1200 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="40"><path d="M0,25 C300,50 900,0 1200,25 L1200,50 L0,50 Z" fill="#fafafa"/></svg></div>
+
+<!-- ══ 02 PHOTOVOICE ══ -->
+<section id="photovoice">
+  <div class="container">
+    <span class="section-label">02 · Photovoice Workshop</span>
+    <h2>Understanding Heat & Flooding Through Student Eyes</h2>
+    <p>Photovoice is a participatory method using photography and storytelling to help people share lived experiences and create change (Wang & Burris, 1997). Instead of experts deciding what matters — participants <em>show</em> what matters to them.</p>
+
+    <div class="callout">
+      <p>"In the Dudley Street neighborhood, students experience heat waves, flooding, and environmental challenges in everyday places — on their walk to school, in parks, on their streets, and around their homes."</p>
+    </div>
+
+    <p>This workshop brought together Boston Latin Academy students, DSNI community representatives (Vikiana Petit, Kalamu Kieta), and the Northeastern Participatory Modeling class. Teacher Amber Balthazard supervised and supported students throughout.</p>
+
+    <h3>Workshop Timeline (45 minutes)</h3>
+    <div class="timeline-bar">
+      <div class="tbar">Step 1<span>Welcome · 3 min</span></div>
+      <div class="tbar">Step 2<span>Get Photos & Groups · 3 min</span></div>
+      <div class="tbar">Step 3<span>Facilitator Example · 4 min</span></div>
+      <div class="tbar">Step 4<span>Small Group Sharing · 16 min</span></div>
+      <div class="tbar">Step 5<span>Whole Group Synthesis · 10 min</span></div>
+      <div class="tbar">Step 6<span>Closing Reflection · 4 min</span></div>
+      <div class="tbar">Step 7<span>Next Steps · 5 min</span></div>
+    </div>
+
+    <h3>Student Photo Prompts</h3>
+    <div class="badge-row">
+      <span class="badge">📸 A place that feels very hot in summer or floods during storms</span>
+      <span class="badge">🌿 A place that feels cooler, safer — or one you'd like to see changed</span>
+    </div>
+
+    <h3>Workshop Goals</h3>
+    <ul class="step-list">
+      <li><div><strong>See their neighborhood as a source of knowledge</strong><span>Students are local experts whose lived experience provides insight missing from technical datasets.</span></div></li>
+      <li><div><strong>Connect environmental issues to daily life</strong><span>By photographing real places — streets, parks, schools, homes — students document how climate impacts show up in their world.</span></div></li>
+      <li><div><strong>Practice listening, reflection & collaboration</strong><span>Small group sharing and whole-group synthesis build skills in observation, storytelling, and collective problem-solving.</span></div></li>
+      <li><div><strong>Contribute knowledge that shapes planning</strong><span>Student insights directly feed into the CLD workshop and future participatory planning efforts with DSNI.</span></div></li>
+    </ul>
+
+    <div class="callout">
+      <p><em>"You students are the experts of your own community. You know many things that the city of Boston might have no idea about."</em> — Facilitator Script</p>
+    </div>
+  </div>
+</section>
+
+<div class="wave-divider"><svg viewBox="0 0 1200 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="40"><path d="M0,25 C300,0 900,50 1200,25 L1200,50 L0,50 Z" fill="#ffffff"/></svg></div>
+
+<!-- ══ 03 CLD ══ -->
+<section id="cld">
+  <div class="container">
+    <span class="section-label">03 · Causal Loop Diagramming Workshop</span>
+    <h2>Mapping the System Together</h2>
+    <p>Participatory CLD is a systems-thinking approach that helps community members understand how different factors connect within a complex problem. CLDs show how causes and effects influence one another over time — often creating cycles that make problems better or worse.</p>
+
+    <div class="callout">
+      <p>"In Roxbury, heat and flooding are closely connected to housing conditions, access to green space, aging infrastructure, and long histories of disinvestment — they form a dynamic system where one problem often intensifies another."</p>
+    </div>
+
+    <h3>Guiding Question</h3>
+    <div class="callout" style="background:#fff3ee; border-color:var(--accent);">
+      <p style="color:var(--accent);">"<strong>What makes heat and flooding better or worse in our neighborhood?</strong>"</p>
+    </div>
+
+    <h3>Four Key Stories From Our CLD</h3>
+    <p>Our preliminary CLD — developed through team brainstorming and refined with student input — surfaces four interconnected system narratives. View the diagrams below:</p>
+
+    <!-- TABBED DIAGRAMS -->
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="showTab('tab-loop','this',this)">Energy Trap Loop</button>
+      <button class="tab-btn" onclick="showTab('tab-full','this',this)">Full CLD</button>
+    </div>
+    <div id="tab-loop" class="tab-panel active">
+      <div class="diagram-wrap">
+        <img id="img-loop" alt="Urban Heat Island Energy Trap Causal Loop Diagram" style="max-width:440px;"
+             onerror="this.style.display='none'">
+        <div class="diagram-caption">Figure 4 · The Urban Heat Island & Energy Trap — Reinforcing Loop</div>
+      </div>
+    </div>
+    <div id="tab-full" class="tab-panel">
+      <div class="diagram-wrap">
+        <img id="img-cld" alt="Full Causal Loop Diagram – Heat and Flooding in Roxbury" style="max-width:100%;"
+             onerror="this.style.display='none'">
+        <div class="diagram-caption">Figure 5 · Full Participatory CLD — Heat, Flooding & Community Resilience in Roxbury</div>
+      </div>
+    </div>
+
+    <div class="story-card">
+      <span class="loop-tag">REINFORCING LOOP</span>
+      <h4>Story 1 · The Infrastructure & Flooding Chain</h4>
+      <p>Old infrastructure leads to blocked drains, worsened by trash accumulation. Urban flooding causes housing damage and mold, draining household expenses and driving displacement.</p>
+      <div class="formula">Old Infrastructure <span class="arr">→</span> Blocked Drains <span class="arr">→</span> Urban Flooding <span class="arr">→</span> Housing Damage <span class="arr">→</span> Expenses <span class="arr">→</span> Displacement</div>
+    </div>
+
+    <div class="story-card">
+      <span class="loop-tag">VICIOUS CYCLE</span>
+      <h4>Story 2 · The Urban Heat Island & Energy Trap</h4>
+      <p>Rising urban heat increases AC use, driving up electricity demand and emissions — which feed back into more urban heat. The "solution" eventually worsens the problem.</p>
+      <div class="formula">Urban Heat <span class="arr">→</span> AC Use <span class="arr">→</span> Electricity Demand <span class="arr">→</span> Emissions <span class="arr">→</span> Urban Heat ↺</div>
+    </div>
+
+    <div class="story-card">
+      <span class="loop-tag">SOCIAL IMPACT</span>
+      <h4>Story 3 · Economic & Social Erosion</h4>
+      <p>Low disposable income leads to delayed maintenance, reducing thermal efficiency. Flooding and heat drive up medical expenses, ultimately leading to displacement and weakening community cohesion.</p>
+      <div class="formula">Low Income <span class="arr">→</span> Delayed Maintenance <span class="arr">→</span> ↓ Thermal Efficiency <span class="arr">→</span> Displacement <span class="arr">→</span> ↓ Community Cohesion</div>
+    </div>
+
+    <div class="story-card" style="border-left-color:var(--teal);">
+      <span class="loop-tag" style="background:#d8f3dc;color:var(--green);">INTERVENTION PATH</span>
+      <h4>Story 4 · The Green Intervention — A Path to Resilience</h4>
+      <p>Increasing green spaces directly reduces urban heat, lowers AC demand, and breaks the energy trap — while directly improving quality of life for Roxbury residents.</p>
+      <div class="formula" style="background:#1b3a2d;">Green Spaces <span class="arr">→</span> ↓ Urban Heat <span class="arr">→</span> ↓ AC Use <span class="arr">→</span> ↑ Quality of Life</div>
+    </div>
+
+    <h3>Workshop Structure (47 minutes)</h3>
+    <ul class="step-list">
+      <li><div><strong>Step 1 · Welcome & Framing (3 min)</strong><span>Introductions, thank community partners, explain CLD purpose and group norms.</span></div></li>
+      <li><div><strong>Step 2 · Variable Brainstorm (15 min)</strong><span>Students write variables on sticky notes: What makes heat/flooding worse? What reduces them?</span></div></li>
+      <li><div><strong>Step 3 · Drawing Relationships (30 min)</strong><span>Three layers — zoomed-in causes, zoomed-out connector variables, and narrative sense-making to identify feedback loops and leverage points.</span></div></li>
+    </ul>
+  </div>
+</section>
+
+<div class="wave-divider"><svg viewBox="0 0 1200 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="40"><path d="M0,25 C300,50 900,0 1200,25 L1200,50 L0,50 Z" fill="#f4f4f4"/></svg></div>
+
+<!-- ══ 04 COMMUNITY MAP ══ -->
+<section id="communitymap">
+  <div class="container">
+    <span class="section-label">04 · Community Hazard Map</span>
+    <h2>Where Do These Hazards Show Up?</h2>
+    <p>The <strong>Common SENSES Community Map</strong> visualizes resident-reported environmental concerns across Roxbury — heat, flooding, air pollution, noise, and more. Each dot represents a real community experience mapped directly from resident input.</p>
+
+    <div class="map-preview" onclick="window.open('https://arcg.is/1rzGzK2','_blank')">
+      <div style="background:linear-gradient(135deg,#2c3e50 0%,#3d5a3e 50%,#2c4a6e 100%); min-height:360px; display:flex; align-items:center; justify-content:center; padding:2rem; position:relative; overflow:hidden;">
+        <div style="position:absolute;inset:0;overflow:hidden;opacity:0.5;">
+          <svg width="100%" height="100%" viewBox="0 0 660 360" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100,180 Q200,130 350,160 Q450,180 560,150" stroke="#ffffff22" stroke-width="6" fill="none"/>
+            <path d="M200,60 Q250,160 280,280 Q300,330 320,360" stroke="#ffffff22" stroke-width="5" fill="none"/>
+            <path d="M50,220 Q200,210 350,195 Q500,175 620,205" stroke="#ffffff22" stroke-width="4" fill="none"/>
+            <ellipse cx="320" cy="210" rx="140" ry="105" stroke="#f39c12" stroke-width="3" stroke-dasharray="10,6" fill="none"/>
+            <circle cx="285" cy="175" r="7" fill="#e74c3c" opacity="0.9"/>
+            <circle cx="310" cy="195" r="5" fill="#e67e22" opacity="0.9"/>
+            <circle cx="345" cy="180" r="6" fill="#e74c3c" opacity="0.85"/>
+            <circle cx="265" cy="205" r="5" fill="#e67e22" opacity="0.9"/>
+            <circle cx="335" cy="225" r="7" fill="#e74c3c" opacity="0.85"/>
+            <circle cx="375" cy="200" r="5" fill="#e67e22" opacity="0.8"/>
+            <circle cx="315" cy="245" r="6" fill="#e74c3c" opacity="0.9"/>
+            <circle cx="315" cy="255" r="7" fill="#3498db" opacity="0.9"/>
+            <circle cx="355" cy="245" r="5" fill="#2980b9" opacity="0.9"/>
+            <circle cx="275" cy="248" r="6" fill="#3498db" opacity="0.8"/>
+            <circle cx="240" cy="232" r="5" fill="#2980b9" opacity="0.85"/>
+            <circle cx="395" cy="235" r="6" fill="#3498db" opacity="0.9"/>
+            <circle cx="255" cy="160" r="6" fill="#9b59b6" opacity="0.85"/>
+            <circle cx="325" cy="150" r="5" fill="#8e44ad" opacity="0.9"/>
+            <circle cx="385" cy="165" r="6" fill="#9b59b6" opacity="0.8"/>
+            <circle cx="300" cy="215" r="5" fill="#f1c40f" opacity="0.9"/>
+            <circle cx="365" cy="220" r="4" fill="#f39c12" opacity="0.9"/>
+            <circle cx="245" cy="185" r="5" fill="#1abc9c" opacity="0.8"/>
+          </svg>
+        </div>
+        <div style="position:absolute;left:14px;top:14px;background:rgba(255,255,255,0.95);border-radius:8px;padding:.7rem 1rem;font-family:sans-serif;font-size:.73rem;color:#222;min-width:150px;">
+          <div style="font-weight:bold;margin-bottom:.4rem;">Environmental Hazards</div>
+          <div style="display:flex;align-items:center;gap:.35rem;margin-bottom:.25rem;"><span style="width:9px;height:9px;border-radius:50%;background:#9b59b6;display:inline-block;"></span>Air Pollution</div>
+          <div style="display:flex;align-items:center;gap:.35rem;margin-bottom:.25rem;"><span style="width:9px;height:9px;border-radius:50%;background:#e74c3c;display:inline-block;"></span>Heat Concerns</div>
+          <div style="display:flex;align-items:center;gap:.35rem;margin-bottom:.25rem;"><span style="width:9px;height:9px;border-radius:50%;background:#3498db;display:inline-block;"></span>Flooding Concerns</div>
+          <div style="display:flex;align-items:center;gap:.35rem;margin-bottom:.25rem;"><span style="width:9px;height:9px;border-radius:50%;background:#f1c40f;display:inline-block;"></span>Noise Concerns</div>
+          <div style="display:flex;align-items:center;gap:.35rem;"><span style="width:9px;height:9px;border-radius:50%;background:#1abc9c;display:inline-block;"></span>Other Hazards</div>
+        </div>
+        <div style="text-align:center;z-index:2;">
+          <div style="font-family:sans-serif;font-size:.78rem;color:#f39c12;letter-spacing:2px;text-transform:uppercase;margin-bottom:.4rem;">Common SENSES</div>
+          <div style="font-size:1.3rem;font-weight:bold;color:#fff;margin-bottom:.3rem;">Community Hazard Map</div>
+          <div style="font-size:.82rem;color:#b7e4c7;">Roxbury · Dudley Street Neighborhood</div>
+        </div>
+        <div class="map-click-overlay"><span>🗺️ Click to open live interactive map in ArcGIS →</span></div>
+      </div>
+    </div>
+
+    <div class="why-grid">
+      <div class="why-card"><div class="icon" style="color:#e74c3c;">🔴</div><h4>Heat Concerns</h4><p>Locations where residents report dangerously high temperatures, concentrated along major corridors in Dudley Street.</p></div>
+      <div class="why-card"><div class="icon" style="color:#3498db;">🔵</div><h4>Flooding Concerns</h4><p>Streets, parks, and residential areas that flood repeatedly during storms due to blocked drains and aging stormwater infrastructure.</p></div>
+      <div class="why-card"><div class="icon" style="color:#9b59b6;">🟣</div><h4>Air Pollution</h4><p>Areas with elevated air quality concerns, often intersecting with high-traffic corridors and proximity to industrial uses.</p></div>
+      <div class="why-card"><div class="icon" style="color:#f1c40f;">🟡</div><h4>Noise & Other Hazards</h4><p>Resident-reported noise, lighting, rodent, and construction concerns that compound environmental stress.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 05 STORYMAP ══ -->
+<section id="storymap" style="text-align:center;">
+  <div class="container">
+    <span class="section-label" style="color:#b7e4c7;border-color:#b7e4c7;">05 · ArcGIS StoryMap</span>
+    <h2>View the Full Interactive StoryMap</h2>
+    <p>Explore the spatial dimensions of heat and flooding in Roxbury — including maps, community context, and neighborhood assets — through our ArcGIS StoryMap.</p>
+    <a href="https://arcg.is/1rzGzK2" target="_blank" class="storymap-link">🗺️ Open StoryMap in ArcGIS</a>
+  </div>
+</section>
+
+<!-- ══ 06 TEAM ══ -->
+<section id="team">
+  <div class="container">
+    <span class="section-label">06 · The Team</span>
+    <h2>Project Team</h2>
+    <p>Developed for PPUA 5246: Participatory Modeling at Northeastern University, in collaboration with DSNI and Boston Latin Academy.</p>
+    <div class="team-grid">
+      <div class="team-card"><h4>Samuel Nukporfe</h4><p>MS Urban Informatics, Northeastern University</p></div>
+      <div class="team-card"><h4>Sajjad Sharifi</h4><p>MS Urban Informatics, Northeastern University</p></div>
+      <div class="team-card"><h4>Olinda Bandeira</h4><p>MS Urban Informatics, Northeastern University</p></div>
+      <div class="team-card"><h4>Boston Latin Academy</h4><p>Student participants & Teacher Amber Balthazard</p></div>
+      <div class="team-card"><h4>DSNI</h4><p>Vikiana Petit & Kalamu Kieta, Community Partners</p></div>
+      <div class="team-card"><h4>Prof. Moira Zellner</h4><p>Course Instructor, Northeastern University</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>PPUA 5246 Participatory Modeling · Northeastern University · 2026</p>
+  <p style="margin-top:.4rem;">Community Partner: <a href="https://www.dsni.org" target="_blank">Dudley Street Neighborhood Initiative</a> · <a href="https://arcg.is/1rzGzK2" target="_blank">View StoryMap</a></p>
+</footer>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const s = window.scrollY, t = document.body.scrollHeight - window.innerHeight;
+    document.getElementById('progress').style.width = (s/t*100)+'%';
+  });
+
+  // Tab switching
+  function showTab(id, _, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // Inject uploaded images as base64 via canvas trick
+  // We set the src of each img to the uploaded image data
+  // The images are passed in as object URLs from the page context
+  // Since we can't access files directly, we use a message-based approach
+  // Instead, we'll use a placeholder approach with styled fallbacks
+
+  // SVG fallbacks for diagrams
+  window.getMindmapSVG = function() {
+    return `<div style="padding:2rem;font-family:sans-serif;">
+      <svg viewBox="0 0 620 360" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;display:block;margin:0 auto;">
+        <circle cx="310" cy="180" r="55" fill="#1a5276" opacity="0.9"/>
+        <text x="310" y="173" text-anchor="middle" fill="#fff" font-size="13" font-family="sans-serif" font-weight="bold">Heat and</text>
+        <text x="310" y="188" text-anchor="middle" fill="#fff" font-size="13" font-family="sans-serif" font-weight="bold">Flood in</text>
+        <text x="310" y="203" text-anchor="middle" fill="#fff" font-size="13" font-family="sans-serif" font-weight="bold">Roxbury</text>
+        <circle cx="100" cy="100" r="42" fill="#2e86c1" opacity="0.9"/>
+        <text x="100" y="95" text-anchor="middle" fill="#fff" font-size="10" font-family="sans-serif">Community &amp;</text>
+        <text x="100" y="108" text-anchor="middle" fill="#fff" font-size="10" font-family="sans-serif">Neighborhood</text>
+        <line x1="140" y1="128" x2="258" y2="160" stroke="#555" stroke-width="1.5"/>
+        <text x="0" y="155" fill="#333" font-size="10" font-family="sans-serif">• DSNI</text>
+        <text x="0" y="168" fill="#333" font-size="10" font-family="sans-serif">• Local resident</text>
+        <text x="0" y="181" fill="#333" font-size="10" font-family="sans-serif">• Small Business</text>
+        <circle cx="480" cy="80" r="42" fill="#2e86c1" opacity="0.9"/>
+        <text x="480" y="75" text-anchor="middle" fill="#fff" font-size="10" font-family="sans-serif">Environment</text>
+        <text x="480" y="88" text-anchor="middle" fill="#fff" font-size="10" font-family="sans-serif">&amp; food group</text>
+        <line x1="445" y1="108" x2="362" y2="148" stroke="#555" stroke-width="1.5"/>
+        <text x="490" y="120" fill="#333" font-size="10" font-family="sans-serif">• The Food Project</text>
+        <circle cx="560" cy="200" r="42" fill="#2e86c1" opacity="0.9"/>
+        <text x="560" y="195" text-anchor="middle" fill="#fff" font-size="10" font-family="sans-serif">Government</text>
+        <text x="560" y="208" text-anchor="middle" fill="#fff" font-size="10" font-family="sans-serif">Office</text>
+        <line x1="519" y1="200" x2="365" y2="190" stroke="#555" stroke-width="1.5"/>
+        <text x="528" y="250" fill="#333" font-size="10" font-family="sans-serif">• City of Boston</text>
+        <text x="528" y="263" fill="#333" font-size="10" font-family="sans-serif">• MBTA</text>
+        <circle cx="100" cy="290" r="42" fill="#2e86c1" opacity="0.9"/>
+        <text x="100" y="287" text-anchor="middle" fill="#fff" font-size="10" font-family="sans-serif">Facilitators</text>
+        <line x1="140" y1="265" x2="258" y2="208" stroke="#555" stroke-width="1.5"/>
+        <text x="0" y="338" fill="#333" font-size="10" font-family="sans-serif">• PM Class</text>
+        <text x="0" y="351" fill="#333" font-size="10" font-family="sans-serif">• Prof. Zellner</text>
+        <circle cx="340" cy="320" r="42" fill="#2e86c1" opacity="0.9"/>
+        <text x="340" y="315" text-anchor="middle" fill="#fff" font-size="10" font-family="sans-serif">Schools &amp;</text>
+        <text x="340" y="328" text-anchor="middle" fill="#fff" font-size="10" font-family="sans-serif">University</text>
+        <line x1="330" y1="278" x2="315" y2="235" stroke="#555" stroke-width="1.5"/>
+        <text x="340" y="355" text-anchor="middle" fill="#333" font-size="10" font-family="sans-serif">BLA · NEU · Other Schools</text>
+      </svg>
+      <div class="diagram-caption">Figure 1 · Stakeholder Mind Map — Heat and Flood in Roxbury</div>
+    </div>`;
+  };
+</script>
+
+<!-- IMAGE INJECTION: load uploaded images -->
+<script>
+  // We'll use a simple drag-drop or postMessage approach
+  // For now display styled placeholders that match the actual diagrams
+  // These will be replaced when images are embedded
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Try to load images — if they fail onerror handles it
+    // Set placeholder backgrounds for diagram imgs
+    const placeholders = {
+      'img-mindmap': '#1a5276',
+      'img-venn': '#2c3e50',
+      'img-network': '#1a5276',
+      'img-loop': '#2c3e50',
+      'img-cld': '#1a3a2d'
+    };
+    Object.entries(placeholders).forEach(([id, bg]) => {
+      const el = document.getElementById(id);
+      if (el && !el.src.includes('data:image')) {
+        el.style.minHeight = '200px';
+        el.style.background = bg;
+        el.style.borderRadius = '8px';
+        el.style.display = 'block';
+        el.style.width = '100%';
+        // Use a transparent pixel so onerror fires properly
+        el.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      }
+    });
+  });
+</script>
+</body>
+</html>
