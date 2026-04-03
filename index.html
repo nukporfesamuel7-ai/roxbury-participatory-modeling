@@ -5,391 +5,828 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heat & Flooding in Roxbury – Participatory Modeling</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  :root {
-    --green: #2d6a4f; --teal: #40916c; --light: #d8f3dc;
-    --accent: #e76f51; --dark: #1b1b2f; --gray: #f4f4f4; --text: #222;
-  }
-  html { scroll-behavior: smooth; }
-  body { font-family: 'Georgia', serif; color: var(--text); background: #fff; }
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --forest:#1a3a2a;--green:#2d6a4f;--teal:#40916c;--mint:#b7e4c7;
+  --ember:#e76f51;--gold:#f4a261;--cream:#fdfcf8;--stone:#f5f3ee;
+  --ink:#1c1c1e;--muted:#6b6b6b;--border:#e0ddd6;
+  --card:#ffffff;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Georgia',serif;color:var(--ink);background:var(--cream);overflow-x:hidden;}
 
-  nav {
-    position: fixed; top: 0; width: 100%; z-index: 100;
-    background: rgba(27,27,47,0.96); backdrop-filter: blur(6px);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 1.5rem; height: 54px;
-  }
-  nav .logo { color: #fff; font-size: .9rem; font-weight: bold; letter-spacing: 1px; white-space:nowrap; }
-  nav ul { list-style: none; display: flex; gap: 1.2rem; flex-wrap:wrap; }
-  nav ul a { color: #ccc; text-decoration: none; font-size: .78rem; font-family: sans-serif; transition: color .2s; }
-  nav ul a:hover { color: #fff; }
-  #progress { position: fixed; top: 54px; left: 0; height: 3px; background: var(--accent); width: 0%; z-index: 99; transition: width .1s; }
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;width:100%;z-index:200;
+  background:rgba(26,58,42,0.97);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:56px;border-bottom:1px solid rgba(183,228,199,0.15);
+}
+.nav-logo{color:var(--mint);font-family:sans-serif;font-size:.78rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
+.nav-links{display:flex;gap:0;list-style:none;}
+.nav-links a{
+  color:rgba(255,255,255,0.6);text-decoration:none;font-family:sans-serif;
+  font-size:.72rem;letter-spacing:.5px;padding:.4rem .9rem;border-radius:4px;
+  transition:all .2s;text-transform:uppercase;
+}
+.nav-links a:hover,.nav-links a.active{color:#fff;background:rgba(255,255,255,0.1);}
+#progress-bar{position:fixed;top:56px;left:0;height:2px;background:var(--ember);width:0%;z-index:199;transition:width .08s;}
 
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    background: url('https://i.imgur.com/ztd4Pv8.jpg') center center / cover no-repeat;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 6rem 2rem 4rem; position: relative; overflow: hidden;
-  }
-  .hero::before {
-    content: ''; position: absolute; inset: 0;
-    background: rgba(0,0,0,0.35);
-  }
-  .hero > * { position: relative; z-index: 2; }
-  .hero-tag { display: inline-block; background: rgba(255,255,255,0.15); color: #fff; font-family: sans-serif; font-size: .75rem; letter-spacing: 2px; padding: .3rem 1rem; border-radius: 20px; margin-bottom: 1.5rem; text-transform: uppercase; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.3); }
-  .hero h1 { font-size: clamp(2.2rem, 5.5vw, 4rem); color: #fff; line-height: 1.15; max-width: 860px; margin-bottom: 1.2rem; text-shadow: 2px 2px 30px rgba(0,0,0,0.9), 0 0 60px rgba(0,0,0,0.7); font-weight: bold; }
-  .hero h1 span { color: #b7e4c7; }
-  .hero .subtitle { color: #fff; font-size: clamp(1rem, 2vw, 1.25rem); max-width: 700px; line-height: 1.7; margin-bottom: 1.2rem; text-shadow: 1px 1px 15px rgba(0,0,0,0.95); font-family: sans-serif; font-weight: 400; }
-  .hero .authors { color: #fff; font-family: sans-serif; font-size: .95rem; font-weight: bold; margin-bottom: .3rem; text-shadow: 1px 1px 10px rgba(0,0,0,0.95); }
-  .hero .date { color: #fff; font-family: sans-serif; font-size: .88rem; margin-bottom: 2rem; text-shadow: 1px 1px 10px rgba(0,0,0,0.95); }
-  .scroll-btn { display: inline-flex; align-items: center; gap: .5rem; background: transparent; border: 2px solid #b7e4c7; color: #b7e4c7; padding: .7rem 1.8rem; border-radius: 30px; font-family: sans-serif; font-size: .9rem; cursor: pointer; text-decoration: none; transition: all .3s; }
-  .scroll-btn:hover { background: #b7e4c7; color: var(--dark); }
-  .scroll-arrow { animation: bounce 1.5s infinite; display: block; margin: 2rem auto 0; color: #b7e4c7; font-size: 1.5rem; }
-  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+/* ── HERO ── */
+.hero{
+  min-height:100vh;position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:7rem 2rem 5rem;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:url('https://nukporfesamuel7-ai.github.io/roxbury-participatory-modeling/hero.jpg') center/cover no-repeat,
+             linear-gradient(160deg,#0d2118 0%,#1a3a2a 40%,#0f2d22 100%);
+}
+.hero-overlay{position:absolute;inset:0;background:rgba(10,28,18,0.72);}
+.hero>*:not(.hero-bg):not(.hero-overlay){position:relative;z-index:2;}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(183,228,199,0.12);border:1px solid rgba(183,228,199,0.3);
+  color:var(--mint);font-family:sans-serif;font-size:.7rem;letter-spacing:2px;
+  text-transform:uppercase;padding:.4rem 1.2rem;border-radius:40px;margin-bottom:2rem;
+}
+.hero-eyebrow span{width:6px;height:6px;background:var(--ember);border-radius:50%;display:inline-block;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.8);}}
+.hero h1{
+  font-size:clamp(2.4rem,5.5vw,4.2rem);color:#fff;line-height:1.12;
+  max-width:820px;margin-bottom:1.5rem;font-weight:normal;
+  text-shadow:0 2px 40px rgba(0,0,0,.8);
+}
+.hero h1 em{font-style:normal;color:var(--mint);}
+.hero-sub{
+  color:rgba(255,255,255,.75);font-family:sans-serif;font-size:clamp(.9rem,1.8vw,1.1rem);
+  max-width:620px;line-height:1.75;margin-bottom:2.5rem;font-weight:300;
+}
+.hero-meta{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;}
+.hero-meta-item{text-align:center;}
+.hero-meta-item .label{color:rgba(255,255,255,.4);font-family:sans-serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:.25rem;}
+.hero-meta-item .value{color:rgba(255,255,255,.85);font-family:sans-serif;font-size:.85rem;}
+.hero-scroll{
+  display:inline-flex;flex-direction:column;align-items:center;gap:.5rem;
+  color:rgba(255,255,255,.4);font-family:sans-serif;font-size:.7rem;letter-spacing:1px;
+  text-transform:uppercase;text-decoration:none;cursor:pointer;border:none;background:none;
+}
+.hero-scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,rgba(255,255,255,0),rgba(255,255,255,.3));animation:scrollline 1.8s ease-in-out infinite;}
+@keyframes scrollline{0%,100%{transform:scaleY(1);opacity:.4}50%{transform:scaleY(.6);opacity:1}}
 
-  section { padding: 5rem 2rem; }
-  .container { max-width: 940px; margin: 0 auto; }
-  .section-label { display: inline-block; font-family: sans-serif; font-size: .75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); border-left: 3px solid var(--teal); padding-left: .6rem; margin-bottom: 1rem; }
-  h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); color: var(--dark); margin-bottom: 1rem; line-height: 1.3; }
-  h3 { font-size: 1.15rem; color: var(--green); margin: 1.8rem 0 .6rem; }
-  p { line-height: 1.8; margin-bottom: 1rem; color: #333; }
-  .callout { background: var(--light); border-left: 4px solid var(--teal); padding: 1.2rem 1.5rem; border-radius: 0 8px 8px 0; margin: 1.5rem 0; }
-  .callout p { margin: 0; font-style: italic; color: #2d6a4f; }
-  .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-  .why-card { background: var(--gray); border-radius: 10px; padding: 1.2rem; border-top: 3px solid var(--teal); }
-  .why-card .icon { font-size: 1.5rem; margin-bottom: .4rem; }
-  .why-card h4 { font-size: .9rem; color: var(--dark); margin-bottom: .3rem; font-family: sans-serif; }
-  .why-card p { font-size: .85rem; margin: 0; color: #555; line-height: 1.6; }
-  .badge-row { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
-  .badge { background: var(--light); border: 1px solid var(--teal); color: var(--green); border-radius: 20px; padding: .25rem .8rem; font-size: .8rem; font-family: sans-serif; }
-  .wave-divider { width: 100%; overflow: hidden; line-height: 0; }
+/* ── SECTION SHELL ── */
+section{padding:6rem 2rem;}
+.container{max-width:960px;margin:0 auto;}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-family:sans-serif;font-size:.68rem;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--teal);margin-bottom:1.2rem;
+}
+.eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--teal);}
+h2{font-size:clamp(1.7rem,3vw,2.4rem);color:var(--forest);line-height:1.25;margin-bottom:.6rem;font-weight:normal;}
+h3{font-size:1.1rem;color:var(--forest);margin:2.2rem 0 .7rem;font-weight:bold;font-family:sans-serif;}
+p{line-height:1.85;color:#3a3a3a;margin-bottom:.9rem;font-size:1rem;}
 
-  /* DIAGRAM IMAGES */
-  .diagram-wrap {
-    background: #fff; border: 1px solid #e0e0e0; border-radius: 12px;
-    padding: 1rem; margin: 1.5rem 0;
-    box-shadow: 0 2px 16px rgba(0,0,0,.06);
-    text-align: center;
-  }
-  .diagram-wrap img { max-width: 100%; border-radius: 8px; display: block; margin: 0 auto; }
-  .diagram-caption { font-family: sans-serif; font-size: .78rem; color: #888; margin-top: .6rem; text-align: center; }
+/* ── PULL QUOTE ── */
+.pull-quote{
+  border-left:3px solid var(--teal);padding:1.2rem 1.8rem;
+  background:linear-gradient(to right,rgba(64,145,108,.06),transparent);
+  margin:2rem 0;border-radius:0 8px 8px 0;
+}
+.pull-quote p{font-size:1.08rem;color:var(--forest);font-style:italic;margin:0;line-height:1.75;}
+.pull-quote cite{display:block;font-family:sans-serif;font-size:.75rem;color:var(--muted);font-style:normal;margin-top:.5rem;letter-spacing:.5px;}
 
-  /* STAKEHOLDER SECTION */
-  #problem { background: #fff; }
+/* ── STAT STRIP ── */
+.stat-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:var(--border);border-radius:12px;overflow:hidden;margin:2.5rem 0;}
+.stat-item{background:var(--card);padding:1.4rem 1.2rem;text-align:center;}
+.stat-num{font-size:2rem;font-weight:700;color:var(--forest);display:block;font-family:sans-serif;line-height:1;}
+.stat-label{font-family:sans-serif;font-size:.72rem;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-top:.4rem;display:block;}
 
-  /* PHOTOVOICE */
-  #photovoice { background: #fafafa; }
-  .step-list { counter-reset: steps; list-style: none; margin: 1.2rem 0; }
-  .step-list li { counter-increment: steps; display: flex; gap: 1rem; align-items: flex-start; padding: .9rem 0; border-bottom: 1px solid #eee; }
-  .step-list li::before { content: counter(steps); background: var(--teal); color: #fff; border-radius: 50%; min-width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; font-family: sans-serif; font-weight: bold; font-size: .85rem; flex-shrink: 0; }
-  .step-list li div strong { display: block; color: var(--dark); margin-bottom: .15rem; font-family: sans-serif; font-size: .9rem; }
-  .step-list li div span { font-size: .87rem; color: #555; line-height: 1.6; }
-  .timeline-bar { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.2rem 0; }
-  .tbar { background: var(--green); color: #fff; border-radius: 6px; padding: .4rem .8rem; font-family: sans-serif; font-size: .78rem; }
-  .tbar span { display: block; font-size: .68rem; opacity: .75; }
+/* ── CARD GRID ── */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin:2rem 0;}
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:1.4rem;transition:box-shadow .2s,transform .2s;
+}
+.card:hover{box-shadow:0 8px 32px rgba(45,106,79,.1);transform:translateY(-2px);}
+.card-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:.9rem;font-size:1.1rem;}
+.card-icon.heat{background:#fde8de;}
+.card-icon.flood{background:#dceefe;}
+.card-icon.justice{background:#e8f5e9;}
+.card-icon.voice{background:#fff3e0;}
+.card h4{font-family:sans-serif;font-size:.88rem;font-weight:700;color:var(--forest);margin-bottom:.4rem;}
+.card p{font-size:.84rem;color:#555;line-height:1.65;margin:0;}
 
-  /* CLD */
-  #cld { background: #fff; }
-  .story-card { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 1.3rem; margin: 1rem 0; border-left: 4px solid var(--accent); transition: box-shadow .2s; }
-  .story-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.08); }
-  .story-card h4 { font-family: sans-serif; color: var(--dark); margin-bottom: .4rem; font-size: .98rem; }
-  .story-card p { font-size: .88rem; color: #555; line-height: 1.7; margin: 0; }
-  .loop-tag { display: inline-block; background: #fde8e0; color: var(--accent); border-radius: 4px; font-size: .7rem; padding: .12rem .45rem; font-family: sans-serif; margin-bottom: .4rem; }
-  .formula { background: var(--dark); color: #b7e4c7; border-radius: 8px; padding: .9rem 1.2rem; font-family: monospace; font-size: .85rem; margin: .8rem 0; line-height: 2; }
-  .formula .arr { color: var(--accent); }
+/* ── DIAGRAM FRAME ── */
+.diagram-frame{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:1.5rem;margin:1.8rem 0;
+  box-shadow:0 2px 20px rgba(0,0,0,.05);
+}
+.diagram-frame img{width:100%;border-radius:8px;display:block;}
+.diagram-caption{font-family:sans-serif;font-size:.73rem;color:var(--muted);margin-top:.75rem;text-align:center;letter-spacing:.3px;}
 
-  /* COMMUNITY MAP */
-  #communitymap { background: #f4f4f4; }
-  .map-preview { border-radius: 12px; overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,.15); margin: 1.5rem 0; cursor: pointer; position: relative; }
-  .map-preview:hover { box-shadow: 0 12px 50px rgba(0,0,0,.2); }
-  .map-click-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,.6); padding: .75rem; text-align: center; }
-  .map-click-overlay span { color: #fff; font-family: sans-serif; font-size: .85rem; }
+/* ── STAKEHOLDER TABLE ── */
+.table-wrap{overflow-x:auto;margin:1.5rem 0;border-radius:12px;border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;font-family:sans-serif;font-size:.82rem;}
+thead tr{background:var(--forest);color:#fff;}
+thead th{padding:.8rem 1rem;text-align:left;font-weight:600;letter-spacing:.3px;}
+tbody tr{border-bottom:1px solid var(--border);}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:nth-child(even){background:var(--stone);}
+tbody td{padding:.75rem 1rem;color:#333;line-height:1.55;vertical-align:top;}
+td:first-child{font-weight:600;color:var(--forest);}
+.badge{
+  display:inline-block;padding:.15rem .6rem;border-radius:20px;
+  font-size:.68rem;letter-spacing:.3px;font-weight:600;
+  background:rgba(64,145,108,.12);color:var(--green);border:1px solid rgba(64,145,108,.25);
+}
 
-  /* STORYMAP */
-  #storymap { background: var(--dark); color: #fff; }
-  #storymap h2 { color: #fff; }
-  #storymap p { color: #b7e4c7; }
-  .storymap-link { display: inline-flex; align-items: center; gap: .6rem; background: var(--accent); color: #fff; text-decoration: none; padding: .9rem 2rem; border-radius: 30px; font-family: sans-serif; font-size: 1rem; margin-top: 1rem; transition: opacity .2s; }
-  .storymap-link:hover { opacity: .85; }
+/* ── LIMITATION CARDS ── */
+.limit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:.8rem;margin:1.2rem 0;}
+.limit-card{
+  background:var(--stone);border:1px solid var(--border);border-radius:10px;
+  padding:1.1rem;border-top:3px solid var(--ember);
+}
+.limit-card h5{font-family:sans-serif;font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:.4rem;}
+.limit-card p{font-size:.8rem;color:#555;line-height:1.6;margin:0;}
 
-  /* TEAM */
-  #team { background: var(--gray); }
-  .team-grid { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.2rem; }
-  .team-card { background: #fff; border-radius: 10px; padding: 1.1rem 1.3rem; flex: 1 1 180px; border-top: 3px solid var(--teal); }
-  .team-card h4 { font-family: sans-serif; color: var(--dark); margin-bottom: .25rem; font-size: .95rem; }
-  .team-card p { font-size: .82rem; color: #666; margin: 0; }
+/* ── BADGE ROW ── */
+.tag-cloud{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0;}
+.tag{
+  display:inline-block;background:var(--stone);border:1px solid var(--border);
+  color:var(--green);border-radius:20px;padding:.28rem .85rem;
+  font-size:.75rem;font-family:sans-serif;font-weight:600;
+}
 
-  footer { background: var(--dark); color: #888; text-align: center; padding: 2rem; font-family: sans-serif; font-size: .8rem; }
-  footer a { color: var(--teal); text-decoration: none; }
+/* ── TIMELINE STEPS ── */
+.steps{list-style:none;margin:1.2rem 0;counter-reset:step;}
+.steps li{
+  counter-increment:step;display:flex;gap:1rem;align-items:flex-start;
+  padding:1rem 0;border-bottom:1px solid var(--border);
+}
+.steps li:last-child{border-bottom:none;}
+.step-num{
+  min-width:2rem;height:2rem;border-radius:50%;
+  background:var(--teal);color:#fff;display:flex;align-items:center;
+  justify-content:center;font-family:sans-serif;font-size:.78rem;font-weight:700;flex-shrink:0;
+}
+.step-body strong{display:block;color:var(--forest);font-family:sans-serif;font-size:.88rem;margin-bottom:.2rem;}
+.step-body span{font-size:.84rem;color:#555;line-height:1.6;}
 
-  /* Tabs for diagrams */
-  .tab-row { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1rem; }
-  .tab-btn { background: #eee; border: none; border-radius: 6px 6px 0 0; padding: .5rem 1rem; font-family: sans-serif; font-size: .8rem; cursor: pointer; color: #555; transition: all .2s; }
-  .tab-btn.active { background: var(--teal); color: #fff; }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
+/* ── STORY CARDS (CLD) ── */
+.story-card{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:1.4rem;margin:1rem 0;border-left:4px solid var(--ember);
+  transition:box-shadow .2s;
+}
+.story-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.08);}
+.story-card.teal{border-left-color:var(--teal);}
+.loop-tag{
+  display:inline-block;background:#fde8de;color:var(--ember);
+  border-radius:4px;font-size:.68rem;padding:.1rem .5rem;
+  font-family:sans-serif;font-weight:700;letter-spacing:.5px;margin-bottom:.5rem;text-transform:uppercase;
+}
+.loop-tag.teal{background:#d8f3dc;color:var(--teal);}
+.story-card h4{font-family:sans-serif;font-size:.95rem;color:var(--forest);margin-bottom:.4rem;font-weight:700;}
+.story-card p{font-size:.85rem;color:#555;line-height:1.7;margin:0;}
+
+/* ── MAP SECTION ── */
+.map-box{
+  border-radius:14px;overflow:hidden;border:1px solid var(--border);
+  position:relative;cursor:pointer;transition:box-shadow .2s;
+}
+.map-box:hover{box-shadow:0 12px 40px rgba(0,0,0,.15);}
+.map-box img{width:100%;display:block;max-height:440px;object-fit:cover;}
+.map-overlay{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(to top,rgba(26,58,42,.9),transparent);
+  padding:1.5rem 1.5rem 1.2rem;
+}
+.map-overlay span{color:#fff;font-family:sans-serif;font-size:.85rem;display:flex;align-items:center;gap:.5rem;}
+
+/* ── HAZARD GRID ── */
+.hazard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem;margin:1.5rem 0;}
+.hazard-item{display:flex;gap:.8rem;align-items:flex-start;padding:.9rem;background:var(--card);border:1px solid var(--border);border-radius:10px;}
+.hazard-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:.35rem;}
+.hazard-item h5{font-family:sans-serif;font-size:.83rem;font-weight:700;color:var(--forest);margin-bottom:.2rem;}
+.hazard-item p{font-size:.78rem;color:#555;line-height:1.55;margin:0;}
+
+/* ── SECTION BG VARIANTS ── */
+.bg-stone{background:var(--stone);}
+.bg-forest{background:var(--forest);}
+.bg-forest h2,.bg-forest p,.bg-forest .eyebrow{color:var(--mint);}
+.bg-forest h3{color:#fff;}
+
+/* ── DIVIDER ── */
+.wave{width:100%;overflow:hidden;line-height:0;display:block;}
+
+/* ── FOOTER ── */
+footer{background:var(--forest);color:rgba(255,255,255,.5);text-align:center;padding:2.5rem 2rem;font-family:sans-serif;font-size:.78rem;}
+footer a{color:var(--mint);text-decoration:none;}
+footer p+p{margin-top:.4rem;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .nav-links{display:none;}
+  .hero h1{font-size:2rem;}
+  .stat-strip{grid-template-columns:1fr 1fr;}
+}
 </style>
 </head>
 <body>
-<div id="progress"></div>
+
+<div id="progress-bar"></div>
 
 <nav>
-  <span class="logo">🌿 Roxbury Participatory Modeling</span>
-  <ul>
+  <span class="nav-logo">Roxbury · Participatory Modeling</span>
+  <ul class="nav-links">
     <li><a href="#problem">Problem</a></li>
     <li><a href="#photovoice">Photovoice</a></li>
     <li><a href="#cld">CLD</a></li>
-    <li><a href="#communitymap">Map</a></li>
-
+    <li><a href="#foraai">Fora.ai</a></li>
+    <li><a href="#map">Map</a></li>
+    <li><a href="#references">References</a></li>
   </ul>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <span class="hero-tag">PPUA 5246 · Participatory Modeling · Northeastern University</span>
-  <h1>Understanding Heat, Flooding<br>&amp; Community Resilience in Roxbury</h1>
-  <p class="subtitle">Using Photovoice and Causal Loop Diagramming to center the knowledge of Roxbury residents and Boston Latin Academy students</p>
-  <p class="authors">Samuel Nukporfe · Sajjad Sharifi · Olinda Bandeira</p>
-  <p class="date">February 26, 2026</p>
-  <a href="#problem" class="scroll-btn">Explore the Project ↓</a>
-  <span class="scroll-arrow">↓</span>
-</section>
+<!-- ══════════════════ HERO ══════════════════ -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-eyebrow">
+    <span></span>
+    PPUA 5246 · Participatory Modeling · Northeastern University
+  </div>
+  <h1>Heat, Flooding &amp; <em>Community Resilience</em><br>in Roxbury</h1>
+  <p class="hero-sub">A participatory study centering the lived knowledge of Dudley Street residents and Boston Latin Academy students — mapping the systems that make some neighborhoods more vulnerable than others.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <span class="label">Authors</span>
+      <span class="value">Samuel Nukporfe · Sajjad Sharifi · Olinda Bandeira</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="label">Community Partner</span>
+      <span class="value">Dudley Street Neighborhood Initiative (DSNI)</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="label">Date</span>
+      <span class="value">February 2026</span>
+    </div>
+  </div>
+  <button class="hero-scroll" onclick="document.getElementById('problem').scrollIntoView({behavior:'smooth'})">
+    Explore the project
+    <span class="hero-scroll-line"></span>
+  </button>
+</div>
 
-<!-- ══ 01 PROBLEM ══ -->
+<!-- ══════════════════ 01 · PROBLEM ══════════════════ -->
 <section id="problem">
   <div class="container">
-    <span class="section-label">01 · Problem Definition</span>
-    <h2>Why Roxbury? Why Now?</h2>
-    <p>The Roxbury and Dudley Street area experiences recurring extreme heat and localized flooding, producing environmental and public health stresses that shape daily life. These challenges reflect long-standing patterns of disinvestment, land-use decisions, and uneven public investment that continue to structure environmental vulnerability.</p>
+    <span class="eyebrow">01 · Problem Definition</span>
+    <h2>Heat &amp; Flooding Vulnerability<br>in Dudley Street, Roxbury</h2>
+    <p>The Roxbury and Dudley Street area experiences recurring exposure to extreme heat and localized flooding — producing environmental and public health stresses that shape daily life. These challenges are not accidental. They reflect the interaction of climate change with long-standing features of the built environment shaped by historic disinvestment, land-use decisions, and uneven public investment.</p>
 
-    <div class="callout">
+    <div class="pull-quote">
       <p>"Heat waves and intense rainfall events are becoming more frequent, but their impacts are unevenly experienced. Some residents, households, and streets bear a disproportionate share of these burdens."</p>
+      <cite>— Reidmiller et al., 2018; Anguelovski, 2014</cite>
     </div>
 
-    <div class="why-grid">
-      <div class="why-card"><div class="icon">🌡️</div><h4>Extreme Heat</h4><p>Disproportionately affects Roxbury due to lack of tree canopy, impervious surfaces, and aging housing stock.</p></div>
-      <div class="why-card"><div class="icon">🌊</div><h4>Urban Flooding</h4><p>Old infrastructure and blocked drains combine with more intense storms, flooding streets, basements, and parks.</p></div>
-      <div class="why-card"><div class="icon">⚖️</div><h4>Environmental Justice</h4><p>Long histories of disinvestment mean these climate stressors land hardest on low-income residents and communities of color.</p></div>
-      <div class="why-card"><div class="icon">🤝</div><h4>Community Knowledge</h4><p>Lived experience holds answers that technical datasets miss — this project centers youth and community voice as essential evidence.</p></div>
+    <div class="stat-strip">
+      <div class="stat-item"><span class="stat-num">10°F</span><span class="stat-label">Hotter than wealthier neighborhoods during heat events</span></div>
+      <div class="stat-item"><span class="stat-num">↑</span><span class="stat-label">Redlining legacy drives tree canopy loss and surface temperature</span></div>
+      <div class="stat-item"><span class="stat-num">4</span><span class="stat-label">Participatory workshops conducted with community</span></div>
+      <div class="stat-item"><span class="stat-num">DSNI</span><span class="stat-label">Central community anchor and project partner</span></div>
     </div>
 
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon heat">🌡️</div>
+        <h4>Extreme Heat</h4>
+        <p>Roxbury sees surface temperatures up to 10°F higher than greener Boston neighborhoods — a disparity directly linked to redlining, tree canopy loss, and impervious surfaces.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon flood">🌊</div>
+        <h4>Urban Flooding</h4>
+        <p>Aging infrastructure and blocked drains combine with more intense storms, flooding streets, basements, and parks — repeatedly, not occasionally.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon justice">⚖️</div>
+        <h4>Environmental Justice</h4>
+        <p>Because some households have fewer resources to recover between events, climate impacts build over time rather than occurring as isolated crises.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon voice">🤝</div>
+        <h4>Why Participation Matters</h4>
+        <p>Data and maps alone cannot capture how heat and flooding are experienced, for whom impacts are most severe, or which interventions feel meaningful day to day.</p>
+      </div>
+    </div>
+
+    <h3>Why Stakeholder Participation Is Essential</h3>
+    <p>In the Dudley Street area, residents hold critical knowledge about which streets flood repeatedly, which parks provide real relief during heat events, and where past investments failed or were never maintained. Engaging stakeholders ensures that lived experience and technical expertise inform one another — leaving space for multiple adaptation pathways to emerge from within the community itself.</p>
+
+    <!-- MIND MAP -->
     <h3>Stakeholder Mind Map</h3>
-    <p>We began by mapping all groups connected to heat and flooding in Roxbury. The mind map below captures the breadth of stakeholders — from community members and local organizations to government offices and academic institutions.</p>
-    <div class="diagram-wrap">
-      <img src="https://nukporfesamuel7-ai.github.io/roxbury-participatory-modeling/mindmap.png"
-           id="img-mindmap"
-           alt="Stakeholder Mind Map – Heat and Flood in Roxbury"
-           style="max-width:580px;">
-      <div class="diagram-caption">Figure 1 · Stakeholder Mind Map — Heat and Flood in Roxbury</div>
+    <p>Following Bammer's (2021) fourth approach to stakeholder identification, we mapped all groups across six categories: <em>People Most Affected, Community &amp; Advocacy Organizations, Governmental Organizations, Housing &amp; Economic Actors, Health &amp; Social Services,</em> and <em>Research/Project Support.</em> The Research group — representing Northeastern University and the PM class — is deliberately placed to one side, reflecting that facilitators are not directly affected and should not occupy a central position in the stakeholder landscape.</p>
+    <div class="diagram-frame">
+      <img src="https://nukporfesamuel7-ai.github.io/roxbury-participatory-modeling/mindmap.png" alt="Stakeholder Mind Map">
+      <p class="diagram-caption">Figure 1 · Stakeholder Mind Map — Heat and Flood in Roxbury (Bammer, 2021)</p>
     </div>
 
-    <h3>Stakeholder Prioritization: Power, Legitimacy & Urgency</h3>
-    <p>Not all stakeholders can be engaged equally. Using the Power–Legitimacy–Urgency framework (Mitchell, Agle & Wood, 1997), we prioritized groups based on their lived experience, ability to influence outcomes, and immediacy of need. Those at the intersection of all three dimensions — Roxbury residents — are the highest priority.</p>
-    <div class="diagram-wrap">
-      <img src="https://nukporfesamuel7-ai.github.io/roxbury-participatory-modeling/venn.png"
-           id="img-venn"
-           alt="Power Legitimacy Urgency Venn Diagram"
-           style="max-width:480px;">
-      <div class="diagram-caption">Figure 2 · Power–Legitimacy–Urgency Framework — Stakeholder Prioritization</div>
-    </div>
-
-    <h3>Stakeholder Network: Who Connects to Whom</h3>
-    <p>DSNI sits at the center of the stakeholder network as a trusted community anchor, connecting residents, government, schools, and academic partners. Arrows show the direction of influence and information flow.</p>
-    <div class="diagram-wrap">
-      <img src="https://nukporfesamuel7-ai.github.io/roxbury-participatory-modeling/network.png"
-           id="img-network"
-           alt="Stakeholder Network Diagram"
-           style="max-width:560px;">
-      <div class="diagram-caption">Figure 3 · Stakeholder Network — DSNI as Community Anchor</div>
-    </div>
-
-    <div style="margin: 2rem 0;">
-      <a href="https://northeastern-my.sharepoint.com/:w:/r/personal/bandeira_o_northeastern_edu/Documents/Participatory%20Model/Midterm/Problem%20definition%20%26%20Stakeholders%20Mapping/Revised%20problem%20definition%20and%20initial%20stakeholder%20mapping.docx?d=wc5797f8a485d4d5b9220bd5d2579de27&csf=1&web=1&e=Gozj2X" target="_blank" style="display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;padding:.75rem 1.5rem;border-radius:8px;font-family:sans-serif;font-size:.9rem;font-weight:bold;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-        📄 View Full Problem Definition & Stakeholder Document →
-      </a>
-    </div>
-
-    <h3>Key Stakeholders</h3>
-    <div class="badge-row">
-      <span class="badge">Roxbury Residents</span>
-      <span class="badge">Boston Latin Academy Students</span>
-      <span class="badge">DSNI</span>
-      <span class="badge">The Food Project Roxbury</span>
-      <span class="badge">City of Boston / Mayor's Office</span>
-      <span class="badge">MBTA</span>
-      <span class="badge">Northeastern University</span>
-      <span class="badge">Small Business Owners</span>
-      <span class="badge">PM Class Facilitators</span>
-      <span class="badge">Prof. Moira Zellner</span>
+    <!-- SUMMARIZED TABLE -->
+    <h3>Key Stakeholders at a Glance</h3>
+    <p>The table below summarizes the primary stakeholder groups, what knowledge they bring, and why they have a direct stake in heat and flooding outcomes in Dudley Street.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Stakeholder</th>
+            <th>Category</th>
+            <th>Key Contribution &amp; Stake</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Roxbury Residents</td><td><span class="badge">Residents</span></td><td>First-hand knowledge of flooding streets, overheating buildings, and informal coping strategies. Most immediate and urgent stake — heat and flooding threaten their health, homes, and stability daily.</td></tr>
+          <tr><td>Elderly &amp; Health-Vulnerable People</td><td><span class="badge">Vulnerable Populations</span></td><td>Direct experience of heat-related illness and mobility constraints during flooding. Face the highest health risks and are most often overlooked in planning.</td></tr>
+          <tr><td>BLA Students &amp; Youth</td><td><span class="badge">Youth / Students</span></td><td>Daily observations of hazards on school routes and near homes. As future residents, they have a long-term stake in how these problems are addressed.</td></tr>
+          <tr><td>DSNI</td><td><span class="badge">Community Org</span></td><td>Deep community trust, historical knowledge of disinvestment, and established ties to residents and city agencies. Central anchor for this project.</td></tr>
+          <tr><td>City of Boston &amp; BWSC</td><td><span class="badge">Government</span></td><td>Legal authority and technical capacity to implement policy, manage stormwater infrastructure, and direct resilience investments.</td></tr>
+          <tr><td>Boston Public Health Commission</td><td><span class="badge">Health Services</span></td><td>Data on heat-related illness and health disparities in Roxbury. Mandate to reduce climate-related public health inequities.</td></tr>
+          <tr><td>Small Business Owners &amp; Landlords</td><td><span class="badge">Economic Actors</span></td><td>Knowledge of how heat and flooding affect operations, property, and maintenance. Economic stake in infrastructure improvement distinct from residential concerns.</td></tr>
+          <tr><td>Northeastern University / PM Class</td><td><span class="badge">Research Support</span></td><td>Facilitation support and systems thinking frameworks. Role is to support — not to drive or own — the process and its outcomes.</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </section>
 
-<div class="wave-divider"><svg viewBox="0 0 1200 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="40"><path d="M0,25 C300,50 900,0 1200,25 L1200,50 L0,50 Z" fill="#fafafa"/></svg></div>
+<svg class="wave" viewBox="0 0 1200 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="40"><path d="M0,20 C300,40 900,0 1200,20 L1200,40 L0,40 Z" fill="#f5f3ee"/></svg>
 
-<!-- ══ 02 PHOTOVOICE ══ -->
-<section id="photovoice">
+<!-- ══════════════════ 02 · PHOTOVOICE ══════════════════ -->
+<section id="photovoice" class="bg-stone">
   <div class="container">
-    <span class="section-label">02 · Photovoice Workshop</span>
-    <h2>Understanding Heat & Flooding Through Student Eyes</h2>
-    <p>Photovoice is a participatory method using photography and storytelling to help people share lived experiences and create change (Wang & Burris, 1997). Instead of experts deciding what matters — participants <em>show</em> what matters to them.</p>
+    <span class="eyebrow">02 · Photovoice Workshop</span>
+    <h2>Understanding Heat &amp; Flooding<br>Through Student Eyes</h2>
+    <p>Photovoice is a participatory action research method in which community members use photography, captions, and group dialogue to document their lived experiences and translate them into messages for change (Bell, 2015). Rather than experts deciding what matters — participants <em>show</em> what matters. On March 9, 2026, we facilitated a 45-minute Photovoice workshop with 27 Boston Latin Academy environmental science students, facilitated by the Northeastern University Participatory Modeling class under Professor Moira Zellner, with BLA teacher Amber Balthazard supervising throughout.</p>
 
-    <div class="callout">
-      <p>"In the Dudley Street neighborhood, students experience heat waves, flooding, and environmental challenges in everyday places — on their walk to school, in parks, on their streets, and around their homes."</p>
+    <div class="pull-quote">
+      <p>"Photovoice is a way to use pictures and stories to show what life is really like — especially for people whose voices are often left out."</p>
+      <cite>— Facilitator Script, BLA Workshop, March 9, 2026</cite>
     </div>
 
-    <p>This workshop brought together Boston Latin Academy students, DSNI community representatives (Vikiana Petit, Kalamu Kieta), and the Northeastern Participatory Modeling class. Teacher Amber Balthazard supervised and supported students throughout.</p>
-
-    <h3>Workshop Timeline (45 minutes)</h3>
-    <div class="timeline-bar">
-      <div class="tbar">Step 1<span>Welcome · 3 min</span></div>
-      <div class="tbar">Step 2<span>Get Photos & Groups · 3 min</span></div>
-      <div class="tbar">Step 3<span>Facilitator Example · 4 min</span></div>
-      <div class="tbar">Step 4<span>Small Group Sharing · 16 min</span></div>
-      <div class="tbar">Step 5<span>Whole Group Synthesis · 10 min</span></div>
-      <div class="tbar">Step 6<span>Closing Reflection · 4 min</span></div>
-      <div class="tbar">Step 7<span>Next Steps · 5 min</span></div>
+    <!-- KEY INSIGHT: geographic diversity -->
+    <div class="card" style="border-left:4px solid var(--ember);border-radius:0 12px 12px 0;margin:1.5rem 0;">
+      <h4 style="font-family:sans-serif;font-size:.88rem;color:var(--ember);margin-bottom:.4rem;">⚠ A Key Finding Before We Begin</h4>
+      <p style="font-size:.87rem;color:#444;margin:0;line-height:1.7;">Our original proposal assumed students were from the Roxbury and Dudley Street area. The March 9 workshop revealed that students come from across <strong>Greater Boston</strong> — Roxbury, East Boston, Hyde Park, and Dorchester. Their experiences of heat and flooding reflected this geographic diversity, and extended far beyond any single neighborhood. Future engagement must account for this.</p>
     </div>
 
-    <h3>Student Photo Prompts</h3>
-    <div class="badge-row">
-      <span class="badge">📸 A place that feels very hot in summer or floods during storms</span>
-      <span class="badge">🌿 A place that feels cooler, safer — or one you'd like to see changed</span>
+    <h3>Two Prompts, Two Directions</h3>
+    <p>Students received two photo prompts from their teacher ahead of the workshop and brought printed images and written captions to share:</p>
+    <div class="card-grid" style="grid-template-columns:1fr 1fr;">
+      <div class="card" style="border-top:3px solid var(--ember);">
+        <h4>Prompt A — The Challenge</h4>
+        <p style="font-size:.86rem;">"How do you experience flooding and/or heat in your community?"</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--teal);">
+        <h4>Prompt B — The Vision</h4>
+        <p style="font-size:.86rem;">"What is your vision for the future of climate and neighborhood resilience?"</p>
+      </div>
     </div>
 
-    <h3>Workshop Goals</h3>
-    <ul class="step-list">
-      <li><div><strong>See their neighborhood as a source of knowledge</strong><span>Students are local experts whose lived experience provides insight missing from technical datasets.</span></div></li>
-      <li><div><strong>Connect environmental issues to daily life</strong><span>By photographing real places — streets, parks, schools, homes — students document how climate impacts show up in their world.</span></div></li>
-      <li><div><strong>Practice listening, reflection & collaboration</strong><span>Small group sharing and whole-group synthesis build skills in observation, storytelling, and collective problem-solving.</span></div></li>
-      <li><div><strong>Contribute knowledge that shapes planning</strong><span>Student insights directly feed into the CLD workshop and future participatory planning efforts with DSNI.</span></div></li>
+    <h3>What Students Shared — Lived Experiences</h3>
+    <p>Students described environmental hazards not as abstract policy problems but as disruptions to ordinary life. Their stories revealed that the impact of heat and flooding is felt as <em>discomfort and inconvenience</em> rather than acute danger — a nuance technical data would miss entirely.</p>
+
+    <div class="stat-strip">
+      <div class="stat-item"><span class="stat-num">27</span><span class="stat-label">BLA students participated</span></div>
+      <div class="stat-item"><span class="stat-num">5</span><span class="stat-label">Small groups facilitated</span></div>
+      <div class="stat-item"><span class="stat-num">4+</span><span class="stat-label">Neighborhoods represented</span></div>
+      <div class="stat-item"><span class="stat-num">Very<br>engaged</span><span class="stat-label">Observed student participation level</span></div>
+    </div>
+
+    <!-- EXPERIENCE THEMES -->
+    <div class="story-card" style="border-left-color:var(--ember);">
+      <span class="loop-tag">Negative Experience</span>
+      <h4>Urban Heat During Everyday Activities</h4>
+      <p>Students described heat making soccer games at the BU field unbearable, a golf outing with family turning "uncomfortable and bothersome," and BLA's own central heating system — which cannot be adjusted — making the school itself hotter than surrounding neighborhoods.</p>
+    </div>
+
+    <div class="story-card" style="border-left-color:var(--ember);">
+      <span class="loop-tag">Negative Experience</span>
+      <h4>Flooding Across the City</h4>
+      <p>A student described flooding during summer camp in Newton. Another recalled heavy rain causing flooding in Downtown Boston two years prior. Multiple students noted that heavy rains bring more trash onto streets — a compounding hazard rarely captured in environmental datasets.</p>
+    </div>
+
+    <div class="story-card" style="border-left-color:var(--ember);">
+      <span class="loop-tag">Negative Experience</span>
+      <h4>The Sneaker Story — A Moment That Resonated</h4>
+      <p>One student's photo of a flooded street sparked immediate recognition across groups. They had saved up for new sneakers, only to face a choice the next morning: walk through the floodwater and ruin them, or take the long route and arrive late to school. "This happens every time it rains hard. We just accept it. But why should we?" This story confirmed that <em>local, relatable examples surface truths that surveys cannot.</em></p>
+    </div>
+
+    <div class="story-card teal">
+      <span class="loop-tag teal">Positive Experience</span>
+      <h4>Green Spaces as Refuge</h4>
+      <p>A student shared photos of the Emerald Necklace as a place of relief from heat — a park where the walking paths are wide, shade is real, and the design around the pond makes it "peaceful." Green spaces near Ashmont MBTA station were also mentioned as making the area feel safer and more comfortable on a daily basis.</p>
+    </div>
+
+    <h3>What Students Envisioned — Collective Priorities</h3>
+    <p>When asked about their vision for climate and neighborhood resilience, students consistently pointed outward — beyond their immediate block — to Greater Boston as a whole. Their priorities were clear and consistent across groups:</p>
+    <div class="tag-cloud">
+      <span class="tag">🌳 More green spaces in urban areas</span>
+      <span class="tag">🏟 More recreational areas in suburban Greater Boston</span>
+      <span class="tag">☀️ Solar panels and cleaner energy</span>
+      <span class="tag">🚶 Safer walking routes during heavy rain</span>
+      <span class="tag">💧 Stay hydrated — personal safety strategies</span>
+    </div>
+    <p style="margin-top:1rem;">Students were not primarily concerned with personal safety from climate hazards — their experiences were framed as <em>uncomfortable and bothersome</em> rather than life-threatening. This is an important distinction for how interventions are framed and communicated to youth communities.</p>
+
+    <h3>Workshop Timeline — March 9, 2026</h3>
+    <ul class="steps">
+      <li><span class="step-num">1</span><div class="step-body"><strong>Welcome &amp; Framing — 0–5 min</strong><span>Introductions, naming the problem, explaining Photovoice in one sentence, and setting group norms: respect, voluntary sharing, no right or wrong answers.</span></div></li>
+      <li><span class="step-num">2</span><div class="step-body"><strong>Facilitator Example — 5–10 min</strong><span>Each facilitator shared one of their own photos and the story behind it. This step worked well — students relaxed after seeing facilitators share personal stories first.</span></div></li>
+      <li><span class="step-num">3</span><div class="step-body"><strong>Personal Sharing &amp; Caption Revision — 10–30 min</strong><span>Students shared their photos and captions in small groups for both prompts, guided by facilitators who noted recurring themes. Students were invited to revise their captions after sharing.</span></div></li>
+      <li><span class="step-num">4</span><div class="step-body"><strong>Emerging Themes — 30–40 min</strong><span>Groups organized photos by prompt, identified common themes, wrote them on flip chart paper, and taped photos beneath each theme. Time pressure limited how fully vision themes were explored.</span></div></li>
+      <li><span class="step-num">5</span><div class="step-body"><strong>Whole-Class Synthesis &amp; Closing — 40–47 min</strong><span>Groups shared top experience themes; facilitators linked student visions back to those experiences. Students were asked what action they felt inspired to take. Due to time constraints, student questions could not be taken at the end.</span></div></li>
     </ul>
 
-    <div style="margin: 2rem 0;">
-      <a href="https://northeastern-my.sharepoint.com/:w:/r/personal/bandeira_o_northeastern_edu/Documents/Participatory%20Model/Midterm/Photovoice/Photovoice%20Revised%20%26%20StoryMap-1%20(7).docx?d=wac6da2a2c4834d65b1114f0964094a23&csf=1&web=1&e=nsnHge" target="_blank" style="display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;padding:.75rem 1.5rem;border-radius:8px;font-family:sans-serif;font-size:.9rem;font-weight:bold;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-        📄 View Full Photovoice Proposal Document →
-      </a>
+    <h3>What We Learned — Lessons for Future Workshops</h3>
+    <div class="limit-grid">
+      <div class="limit-card"><h5>Test all equipment early</h5><p>The whiteboard failed on the day. Facilitators adapted by using paper, but setup should always be tested at least 40 minutes before the session.</p></div>
+      <div class="limit-card"><h5>Confirm stakeholder attendance</h5><p>DSNI representatives were unable to attend. Future workshops must confirm attendance in advance and plan how to share insights with absent partners afterward.</p></div>
+      <div class="limit-card"><h5>Build in time buffers</h5><p>The 45-minute session felt rushed. Shortening the sharing portion by 5 minutes would create space for closing reflections and student questions — a critical part of the process.</p></div>
+      <div class="limit-card"><h5>All facilitators arrive 40 min early</h5><p>Some facilitators arrived late, disrupting setup and group assignments. Early arrival must be a firm commitment, not a suggestion.</p></div>
     </div>
 
-    <div class="callout">
-      <p><em>"You students are the experts of your own community. You know many things that the city of Boston might have no idea about."</em> — Facilitator Script</p>
+    <div class="pull-quote" style="margin-top:2rem;">
+      <p>"Students from all over Greater Boston showed a good sense of belonging to the city as a whole. Their vision was not limited to BLA — they wanted a safe and healthy environment across all of Greater Boston."</p>
+      <cite>— Facilitator Post-Workshop Reflection, Sajjad Sharifi</cite>
     </div>
   </div>
 </section>
 
-<div class="wave-divider"><svg viewBox="0 0 1200 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="40"><path d="M0,25 C300,0 900,50 1200,25 L1200,50 L0,50 Z" fill="#ffffff"/></svg></div>
+<svg class="wave" viewBox="0 0 1200 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="40"><path d="M0,20 C300,0 900,40 1200,20 L1200,40 L0,40 Z" fill="#ffffff"/></svg>
 
-<!-- ══ 03 CLD ══ -->
+<!-- ══════════════════ 03 · CLD ══════════════════ -->
 <section id="cld">
   <div class="container">
-    <span class="section-label">03 · Causal Loop Diagramming Workshop</span>
+    <span class="eyebrow">03 · Causal Loop Diagramming Workshop</span>
     <h2>Mapping the System Together</h2>
-    <p>Participatory CLD is a systems-thinking approach that helps community members understand how different factors connect within a complex problem. CLDs show how causes and effects influence one another over time — often creating cycles that make problems better or worse.</p>
+    <p>Causal Loop Diagramming (CLD) is a systems-thinking tool that helps communities visualize how different variables connect and influence one another over time — often creating feedback cycles that make problems better or worse. On March 16, 2026, we facilitated a 47-minute participatory CLD workshop with BLA students, building directly on the Photovoice insights from March 9. Students arrived already familiar with CLD basics from an online pre-session held the Friday before — a step that proved essential to the workshop's depth and pace.</p>
 
-    <div class="callout">
-      <p>"In Roxbury, heat and flooding are closely connected to housing conditions, access to green space, aging infrastructure, and long histories of disinvestment — they form a dynamic system where one problem often intensifies another."</p>
+    <div class="pull-quote">
+      <p>"What are the causes of heat vulnerability in our community? What are the consequences of this vulnerability — and where could we intervene?"</p>
+      <cite>— Guiding Question, CLD Workshop, March 16, 2026</cite>
     </div>
 
-    <h3>Guiding Question</h3>
-    <div class="callout" style="background:#fff3ee; border-color:var(--accent);">
-      <p style="color:var(--accent);">"<strong>What makes heat and flooding better or worse in our neighborhood?</strong>"</p>
+    <!-- KEY ALERT -->
+    <div class="card" style="border-left:4px solid var(--teal);border-radius:0 12px 12px 0;margin:1.5rem 0;">
+      <h4 style="font-family:sans-serif;font-size:.88rem;color:var(--teal);margin-bottom:.4rem;">💡 A Critical Design Lesson</h4>
+      <p style="font-size:.87rem;color:#444;margin:0;line-height:1.7;">The virtual pre-session held the Friday before March 16 was originally treated as optional. In practice, it was <strong>essential</strong> — students arrived already familiar with the seed diagram and CLD basics, which meant the in-person session could move faster and go deeper. This should be treated as a required preparatory step in all future iterations.</p>
     </div>
 
-    <h3>Four Key Stories From Our CLD</h3>
-    <p>Our preliminary CLD — developed through team brainstorming and refined with student input — surfaces four interconnected system narratives. View the diagrams below:</p>
+    <h3>Four Workshop Goals</h3>
+    <div class="card-grid">
+      <div class="card" style="border-top:3px solid var(--teal);">
+        <h4>Goal 1 — Identify Factors</h4>
+        <p style="font-size:.84rem;">Name the main variables shaping heat vulnerability along Blue Hill Avenue, building a shared vocabulary grounded in student experience.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--teal);">
+        <h4>Goal 2 — Map Feedbacks</h4>
+        <p style="font-size:.84rem;">Identify how factors interconnect and reinforce one another — moving students beyond linear cause-and-effect toward systems thinking.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--ember);">
+        <h4>Goal 3 — Find Leverage Points</h4>
+        <p style="font-size:.84rem;">Identify where interventions are possible — at the individual, community, and policy level — and what trade-offs they involve.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--ember);">
+        <h4>Goal 4 — Connect to Action</h4>
+        <p style="font-size:.84rem;">Ensure the diagram belongs to students — a bridge to ongoing environmental justice organizing with DSNI and the broader community.</p>
+      </div>
+    </div>
 
+    <h3>What Students Named — Key Variables</h3>
+    <p>Students brought their own lived experience to the diagramming process. Beginning from a seed variable of <em>Extreme Heat</em>, they surfaced the following factors independently:</p>
+    <div class="tag-cloud">
+      <span class="tag">Carbon emissions</span>
+      <span class="tag">Fossil fuel dependence</span>
+      <span class="tag">Lack of trees &amp; green spaces</span>
+      <span class="tag">Urban development &amp; buildings</span>
+      <span class="tag">Transportation &amp; traffic</span>
+      <span class="tag">Air conditioning use</span>
+      <span class="tag">Urban sprawl</span>
+      <span class="tag">Animal population*</span>
+    </div>
+    <p style="font-size:.83rem;color:var(--muted);margin-top:.5rem;">* "Animal population" was suggested by a student and placed in the <em>parking lot</em> — a facilitation strategy that kept the discussion moving without dismissing the idea. Revisiting parked variables at the end should be a standard step in future workshops.</p>
 
+    <h3>The Reinforcing Loop Students Discovered</h3>
+    <p>The most significant insight of the March 16 workshop was that students independently identified a self-reinforcing feedback cycle — without being prompted to find one. Tracing the arrows themselves, they recognized:</p>
 
     <div class="story-card">
-      <span class="loop-tag">VICIOUS CYCLE</span>
-      <h4>Story 1 · The Urban Heat Island & Energy Trap</h4>
-      <p>Rising urban heat increases AC use, driving up electricity demand and emissions — which feed back into more urban heat. The "solution" eventually worsens the problem.</p>
-      <div class="diagram-wrap" style="margin-top:1rem;">
-        <img src="https://nukporfesamuel7-ai.github.io/roxbury-participatory-modeling/loop1.png" alt="Urban Heat Energy Trap Loop" style="max-width:420px;">
-        <div class="diagram-caption">Figure 4 · Urban Heat Island & Energy Trap — Reinforcing Loop</div>
+      <span class="loop-tag">Reinforcing Cycle — Student Discovery</span>
+      <h4>Fossil Fuels → Emissions → Heat → AC Use → More Emissions</h4>
+      <p>Heavy dependence on fossil fuels reduces green space through urban development. Less green space intensifies heat. More heat drives up air conditioning use. More AC use increases energy demand and carbon emissions — which worsens climate change and produces more extreme heat. Students recognized this loop on their own, which was an unprompted and analytically sophisticated insight. Future facilitation should include an explicit moment to name and celebrate when a loop is closed.</p>
+      <div class="diagram-frame" style="margin-top:1rem;">
+        <img src="https://nukporfesamuel7-ai.github.io/roxbury-participatory-modeling/loop1.png" alt="Reinforcing Loop — Heat Energy Trap" style="max-width:420px;margin:0 auto;">
+        <p class="diagram-caption">Figure 4 · Urban Heat &amp; Energy Trap — Reinforcing Feedback Loop</p>
       </div>
     </div>
 
-    <div class="story-card" style="border-left-color:var(--teal);">
-      <span class="loop-tag" style="background:#d8f3dc;color:var(--green);">FULL SYSTEM</span>
-      <h4>Story 2 · The Full Causal Loop Diagram</h4>
-      <p>The complete CLD maps all four system narratives together — infrastructure and flooding, the urban heat trap, economic and social erosion, and the green intervention pathway — showing how they interact across Roxbury's Dudley Street neighborhood.</p>
-      <div class="diagram-wrap" style="margin-top:1rem;">
-        <img src="https://nukporfesamuel7-ai.github.io/roxbury-participatory-modeling/cld-full.png" alt="Full Causal Loop Diagram" style="max-width:100%;">
-        <div class="diagram-caption">Figure 5 · Full Participatory CLD — Heat, Flooding & Community Resilience in Roxbury</div>
+    <div class="story-card teal">
+      <span class="loop-tag teal">Full System</span>
+      <h4>The Full Causal Loop Diagram</h4>
+      <p>The complete CLD synthesizes all variables and relationships identified across the five student groups — mapping the infrastructure and heat cycle, the fossil fuel feedback loop, the green space trade-off, and the intervention pathways students envisioned. It represents the collective systems knowledge of BLA students about their city.</p>
+      <div class="diagram-frame" style="margin-top:1rem;">
+        <img src="https://nukporfesamuel7-ai.github.io/roxbury-participatory-modeling/cld-full.png" alt="Full CLD">
+        <p class="diagram-caption">Figure 5 · Full Participatory CLD — Heat Vulnerability &amp; Community Resilience, Blue Hill Avenue</p>
       </div>
     </div>
 
-    <div style="margin: 2rem 0;">
-      <a href="https://northeastern-my.sharepoint.com/:w:/r/personal/bandeira_o_northeastern_edu/Documents/Participatory%20Model/Midterm/CLD%20proposal/Participatory%20CLD%20workshop%20proposal-3-3-2.docx?d=w24da992cda614f99bd2fbc904f962009&csf=1&web=1&e=QT5cI1" target="_blank" style="display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;padding:.75rem 1.5rem;border-radius:8px;font-family:sans-serif;font-size:.9rem;font-weight:bold;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-        📄 View Full CLD Workshop Proposal Document →
-      </a>
+    <h3>Student-Identified Leverage Points &amp; Solutions</h3>
+    <p>During the reflection phase, students proposed a range of interventions spanning individual behavior, community infrastructure, and policy — demonstrating genuine systems thinking about scale and feasibility:</p>
+    <div class="card-grid">
+      <div class="card" style="border-top:3px solid var(--green);">
+        <h4>Green Infrastructure</h4>
+        <p style="font-size:.84rem;">Plant more trees for shade and carbon absorption. Create more green spaces and recreational areas in urban neighborhoods across Greater Boston.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--gold);">
+        <h4>Clean Energy Transition</h4>
+        <p style="font-size:.84rem;">Install solar panels. Increase renewable energy sources. Develop air conditioning systems that produce fewer carbon emissions. Reduce fossil fuel reliance.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--teal);">
+        <h4>Transportation &amp; Urban Design</h4>
+        <p style="font-size:.84rem;">Improve public transportation to reduce traffic and emissions. Rethink urban sprawl and development patterns that displace green space.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--ember);">
+        <h4>Individual &amp; Community Actions</h4>
+        <p style="font-size:.84rem;">Reduce unnecessary AC use. Spend more time outdoors. One student proposed this after a drive with their mom — reflecting on consumption patterns in daily life.</p>
+      </div>
     </div>
 
-    <h3>Workshop Structure (47 minutes)</h3>
-    <ul class="step-list">
-      <li><div><strong>Step 1 · Welcome & Framing (3 min)</strong><span>Introductions, thank community partners, explain CLD purpose and group norms.</span></div></li>
-      <li><div><strong>Step 2 · Variable Brainstorm (15 min)</strong><span>Students write variables on sticky notes: What makes heat/flooding worse? What reduces them?</span></div></li>
-      <li><div><strong>Step 3 · Drawing Relationships (30 min)</strong><span>Three layers — zoomed-in causes, zoomed-out connector variables, and narrative sense-making to identify feedback loops and leverage points.</span></div></li>
+    <h3>A Critical Trade-Off Students Identified</h3>
+    <div class="pull-quote" style="border-color:var(--ember);background:linear-gradient(to right,rgba(231,111,81,.06),transparent);">
+      <p>"You can't build more urban infrastructure <em>and</em> preserve green spaces at the same time — these goals are in tension with each other."</p>
+      <cite>— Student insight, CLD Workshop, March 16, 2026</cite>
+    </div>
+    <p>This trade-off between urban development and green space preservation was surfaced unprompted by a student — one of the most sophisticated systems insights of the workshop. It reveals that well-intentioned interventions can create new problems if the full system is not considered.</p>
+
+    <h3>Workshop Timeline — March 16, 2026</h3>
+    <ul class="steps">
+      <li><span class="step-num">1</span><div class="step-body"><strong>Introductions &amp; Framing — 0–5 min</strong><span>Facilitators re-introduced themselves, connected to the Photovoice session, and explained the day's purpose. Name tags helped create a peer-like atmosphere rather than a teacher–student dynamic.</span></div></li>
+      <li><span class="step-num">2</span><div class="step-body"><strong>Seed Diagram &amp; Illustration — 5–10 min</strong><span>Facilitators pointed to the seed diagram projected on screen, explained blue (direct) and red (inverse) arrows, and invited students to build from it or start fresh. Starting variable: <em>Extreme Heat.</em></span></div></li>
+      <li><span class="step-num">3</span><div class="step-body"><strong>Building the Diagram — 10–35 min</strong><span>Students added variables via sticky notes on Wizard Wall boards, connected them with colored arrows, and traced loops. A "parking lot" held variables whose connections were unclear — to be revisited rather than dismissed.</span></div></li>
+      <li><span class="step-num">4</span><div class="step-body"><strong>Small Group Reflection — 35–40 min</strong><span>Groups summarized key insights on post-its: what reinforces heat vulnerability, what solutions might backfire, and what leverage points students wanted to prioritize.</span></div></li>
+      <li><span class="step-num">5</span><div class="step-body"><strong>Large Group Synthesis — 40–47 min</strong><span>Groups shared insights across the class. An important correction occurred here: when a facilitator began presenting their own idea, Prof. Zellner redirected — reminding facilitators that this phase must remain entirely student-led.</span></div></li>
     </ul>
+
+    <h3>Lessons Learned — March 16</h3>
+    <div class="limit-grid">
+      <div class="limit-card"><h5>Make the pre-session required</h5><p>The Friday online session was critical. Students who came in already knowing what a CLD was could engage immediately — without it, far more time would have been lost to orientation.</p></div>
+      <div class="limit-card"><h5>Facilitators are process guides only</h5><p>During the large group discussion, a facilitator began sharing their own idea. Prof. Zellner intervened. Facilitators must resist the impulse to contribute content — their role is to draw out student voices, not add to them.</p></div>
+      <div class="limit-card"><h5>Celebrate closed loops explicitly</h5><p>Students independently identified a reinforcing cycle but may not have realized the analytical significance of what they had done. Future workshops need a prompt to name and celebrate this moment.</p></div>
+      <div class="limit-card"><h5>Revisit the parking lot</h5><p>The parking lot kept discussions moving without dismissing ideas. But facilitators must explicitly return to it at the end of the diagramming phase — parked variables should not simply disappear.</p></div>
+    </div>
   </div>
 </section>
 
-<div class="wave-divider"><svg viewBox="0 0 1200 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="40"><path d="M0,25 C300,50 900,0 1200,25 L1200,50 L0,50 Z" fill="#f4f4f4"/></svg></div>
+<svg class="wave" viewBox="0 0 1200 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="40"><path d="M0,20 C300,40 900,0 1200,20 L1200,40 L0,40 Z" fill="#f5f3ee"/></svg>
 
-<!-- ══ 04 COMMUNITY MAP ══ -->
-<section id="communitymap">
+<!-- ══════════════════ 04 · FORA.AI ══════════════════ -->
+<section id="foraai" class="bg-stone">
   <div class="container">
-    <span class="section-label">04 · Community Hazard Map</span>
+    <span class="eyebrow">04 · Fora.ai / L-GrID Simulation Workshop</span>
+    <h2>Designing Green Infrastructure<br>Solutions Together</h2>
+    <p>On March 26, 2026, BLA students, DSNI representatives, Northeastern facilitators, and community members gathered for a 90-minute evening workshop using <strong>Fora.ai</strong> — an online participatory modeling platform hosting the <strong>L-GrID (Landscape Green Infrastructure Design)</strong> model. Working in three teams, participants placed green infrastructure on an interactive map of the Dudley Street neighborhood and ran simulations to see how those solutions affected flooding, cost, and community priorities. The workshop built directly on what students had documented in Photovoice and mapped in the CLD.</p>
+
+    <div class="pull-quote">
+      <p>"There is no right or wrong answer. The point is to learn by playing. The nice thing is that we can try something on the map together, run the simulation, learn, and try again."</p>
+      <cite>— Facilitator Script, Fora.ai Workshop, March 26, 2026</cite>
+    </div>
+
+    <!-- DSNI MOMENT -->
+    <div class="card" style="border-left:4px solid var(--teal);border-radius:0 12px 12px 0;margin:1.5rem 0;">
+      <h4 style="font-family:sans-serif;font-size:.88rem;color:var(--teal);margin-bottom:.4rem;">🌱 A Turning Point</h4>
+      <p style="font-size:.87rem;color:#444;margin:0;line-height:1.7;">When Vikiana from DSNI joined during the CLD recap and explained DSNI's work — inviting students to get involved — student interest and energy visibly increased. This kind of community partner intervention should be planned for and protected in all future sessions. It is not incidental; it is the bridge between classroom learning and real community action.</p>
+    </div>
+
+    <h3>Five Workshop Goals</h3>
+    <div class="card-grid">
+      <div class="card" style="border-top:3px solid var(--teal);">
+        <h4>Goal 1 — Understand Flooding</h4>
+        <p style="font-size:.84rem;">Draw on lived experience of flooding in Roxbury to explore how flooding works at neighborhood scale through interactive simulation.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--teal);">
+        <h4>Goal 2 — Know the GI Types</h4>
+        <p style="font-size:.84rem;">Build working knowledge of green roofs, bioswales, and permeable pavers — how each functions and what it can and cannot do.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--green);">
+        <h4>Goal 3 — Think Spatially</h4>
+        <p style="font-size:.84rem;">Apply neighborhood knowledge to make spatial decisions about where GI should be placed and why — connecting data layers to lived geography.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--ember);">
+        <h4>Goal 4 — Surface Trade-offs</h4>
+        <p style="font-size:.84rem;">Use concern profiles to surface and work through competing community priorities — and discuss who benefits and who does not from each solution.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--ember);">
+        <h4>Goal 5 — Build Concrete Strategies</h4>
+        <p style="font-size:.84rem;">Co-generate GI strategies grounded in both community knowledge and simulation evidence — for potential use by DSNI and community decision-makers.</p>
+      </div>
+    </div>
+
+    <h3>How the Platform Works</h3>
+    <p>Each team was assigned a green infrastructure type and given a $10,000,000 budget. They defined success using concern profiles — representing perspectives like a public official, a hydrologist, or a parent — then placed GI on the map, ran a simulation, and analyzed results across seven metrics: damage reduction, groundwater infiltration, maximum flooded area, downstream impact, investment, capacity used, and cost-efficiency.</p>
+    <div class="tag-cloud">
+      <span class="tag">🏠 Group 1 — Green Roofs</span>
+      <span class="tag">🌿 Group 2 — Bioswales</span>
+      <span class="tag">🧱 Group 3 — Permeable Pavers</span>
+    </div>
+
+    <!-- RESULTS -->
+    <h3>What the Simulation Showed — Real Results from March 26</h3>
+
+    <div class="story-card" style="border-left-color:var(--ember);">
+      <span class="loop-tag">Group 1 — Green Roofs</span>
+      <h4>$9,744,000 Spent. Zero Flood Reduction.</h4>
+      <p>The green roof group used 100% of available capacity and spent nearly the entire budget — and flooding did not change at all across any metric. Damage reduction: 0%. Flooded area: 0% improvement. Flooded streets: 0% improvement. Cost: $67.17/gallon — the least cost-effective GI type tested.</p>
+      <p style="margin-top:.6rem;font-size:.85rem;color:var(--teal);font-style:italic;">This became the workshop's most powerful teaching moment. Green roofs absorb small rainfall events and reduce urban heat — but they are not designed to handle large storm surges at neighborhood scale. They are a heat resilience tool, not a flood tool. Students began asking <em>why</em> it didn't work, which opened a deeper conversation about how different GI types function and where placement matters.</p>
+    </div>
+
+    <div class="story-card teal">
+      <span class="loop-tag teal">Group 2 — Bioswales (Best Performer)</span>
+      <h4>88% Damage Reduction. Most Cost-Effective at $9.88/gallon.</h4>
+      <p>Bioswales produced the strongest results of any GI type tested. Across two trials, the group achieved 50% reductions in maximum flooded area and flooded streets, and up to 88% reduction in damage cost — from $2,500,000 down to $300,000. The second trial (Bioswales-2) improved on the first by refining placement strategy, demonstrating that iteration and learning matter.</p>
+      <p style="margin-top:.6rem;font-size:.85rem;color:#555;">Bioswales were placed along Wyoming Street, Warren Street, Wabeno Street, Carlisle Street, Gaston Street, near Elm Hill Park, Intervale Street, Townsend Street, and Hazelwood Street — targeting impervious surfaces and flood-prone parcels on the baseline map.</p>
+      <p style="margin-top:.6rem;font-size:.85rem;color:var(--ember);font-style:italic;"><strong>The persistent gap:</strong> Despite best performance overall, Impact Downstream remained at 3% — unchanged across both bioswale trials. No GI type tested reduced downstream flooding at all. This is an equity finding: the interventions that most reduced local flooding provided no measurable benefit to residents further downstream.</p>
+    </div>
+
+    <div class="story-card" style="border-left-color:var(--gold);">
+      <span class="loop-tag" style="background:#fff3e0;color:var(--gold);">Group 3 — Permeable Pavers</span>
+      <h4>Improved Infiltration. Insufficient for Major Flood Events.</h4>
+      <p>Permeable pavers improved groundwater infiltration but did not reduce flooded area or flooded streets in either trial. Cost: $23–$24/gallon — significantly more expensive than bioswales per unit of flood reduction. Useful at parcel scale for managing smaller rainfall events, but insufficient for the storm surges Roxbury experiences.</p>
+    </div>
+
+    <!-- COST TABLE -->
+    <h3>Cost-Effectiveness at a Glance</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>GI Type</th><th>Cost per Gallon</th><th>Damage Reduction</th><th>Flooded Area</th><th>Downstream Impact</th><th>Verdict</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Bioswales</td><td>$9.88–$11.48</td><td>80–88%</td><td>50% reduction</td><td>No change (3%)</td><td><span class="badge" style="background:#d8f3dc;color:var(--green);border-color:var(--teal);">Best overall</span></td></tr>
+          <tr><td>Permeable Pavers</td><td>$23–$24</td><td>Minimal</td><td>No reduction</td><td>No change (3%)</td><td><span class="badge" style="background:#fff3e0;color:#b7690a;border-color:#f4a261;">Parcel-scale only</span></td></tr>
+          <tr><td>Green Roofs</td><td>$67.17</td><td>0%</td><td>No reduction</td><td>No change (3%)</td><td><span class="badge" style="background:#fde8de;color:var(--ember);border-color:var(--ember);">Heat tool, not flood tool</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pull-quote" style="border-color:var(--ember);background:linear-gradient(to right,rgba(231,111,81,.06),transparent);">
+      <p>"Our best result reduced neighborhood damage by 88% — but look at the downstream column. It never moved. What does that tell us about who this solution helps, and who it doesn't?"</p>
+      <cite>— Facilitator prompt, Fora.ai wrap-up discussion</cite>
+    </div>
+
+    <h3>What Participants Told Us</h3>
+    <ul class="steps">
+      <li><span class="step-num">💡</span><div class="step-body"><strong>Iteration produces better solutions</strong><span>Bioswales-2 outperformed Bioswales-1 in every metric despite spending less — because the group refined their placement strategy after seeing the first results. Learning through the simulation cycle is itself a core outcome of the workshop.</span></div></li>
+      <li><span class="step-num">💡</span><div class="step-body"><strong>Unexpected results are the best teaching moments</strong><span>When the green roof group saw zero flood improvement after spending $9.7 million, initial discouragement quickly turned into genuine curiosity. Students began asking <em>why</em> — which opened a richer systems conversation than any planned prompt had.</span></div></li>
+      <li><span class="step-num">💡</span><div class="step-body"><strong>Concern profiles made trade-offs visible</strong><span>Sparrow prioritized groundwater infiltration; Adrian prioritized capacity and efficiency. Having explicitly defined roles meant the group could name their disagreements and negotiate — rather than assuming consensus.</span></div></li>
+      <li><span class="step-num">💡</span><div class="step-body"><strong>Students wanted to keep going</strong><span>Several students expressed interest in becoming co-facilitators for future sessions. Others asked to continue exploring in Fora.ai independently — including combining GI types and testing whether concentrated vs. distributed placement changes outcomes.</span></div></li>
+    </ul>
+
+    <h3>What the Simulation Cannot Capture</h3>
+    <p>A central act of intellectual honesty in participatory modeling is naming the gap between simulation and reality. Facilitators raised three contextual limitations explicitly:</p>
+    <div class="limit-grid">
+      <div class="limit-card"><h5>Land ownership</h5><p>The simulation allows GI placement anywhere. In reality, the highest-impact sites are often privately or institutionally owned — requiring policy tools the model cannot capture.</p></div>
+      <div class="limit-card"><h5>Maintenance over time</h5><p>The simulation treats GI as permanently effective. In reality, bioswales clog, pavers seal over, and green roofs need replanting — especially in communities with limited maintenance budgets.</p></div>
+      <div class="limit-card"><h5>Downstream equity</h5><p>No GI type tested reduced downstream flooding. This is not a simulation limitation — it is a genuine equity finding about who benefits and who remains unprotected from the interventions modeled.</p></div>
+      <div class="limit-card"><h5>What comes next</h5><p>The simulation shows what could work spatially. It does not show how to get it built — which requires organizing, advocacy, and policy change alongside technical planning.</p></div>
+    </div>
+
+    <h3>Lessons Learned — March 26</h3>
+    <div class="limit-grid" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr));">
+      <div class="limit-card"><h5>Use Safari or Firefox</h5><p>Chrome was unreliable throughout. Browser type significantly affected simulation performance. This must be tested and confirmed before any future session begins.</p></div>
+      <div class="limit-card"><h5>Book a computer lab</h5><p>Reliance on student Chromebooks and personal laptops caused connectivity disruptions. A dedicated computer lab with stable internet is strongly recommended.</p></div>
+      <div class="limit-card"><h5>Show GI photos first</h5><p>Students did not know what green roofs, bioswales, or permeable pavers look like in real life and were searching online during the activity. A 5-minute visual intro before opening the platform is essential.</p></div>
+      <div class="limit-card"><h5>Separate facilitator and tech roles</h5><p>On March 26, facilitators performed both roles simultaneously — pulling attention away from participants at critical moments. Each group needs one dedicated facilitator and one dedicated tech support person.</p></div>
+      <div class="limit-card"><h5>Know students' day in advance</h5><p>Students had taken their SAT exams that same morning — unknown to facilitators. This significantly affected energy levels. Check with the teacher about the students' schedule before any evening session.</p></div>
+      <div class="limit-card"><h5>Protect the break</h5><p>The 5-minute transition break before Fora.ai was skipped due to time pressure. For future sessions this break must be protected — participants need a reset before the simulation begins, especially after a long day.</p></div>
+    </div>
+  </div>
+</section>
+
+<svg class="wave" viewBox="0 0 1200 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="40"><path d="M0,20 C300,0 900,40 1200,20 L1200,40 L0,40 Z" fill="#f5f3ee"/></svg>
+
+<!-- ══════════════════ 05 · MAP ══════════════════ -->
+<section id="map" class="bg-stone">
+  <div class="container">
+    <span class="eyebrow">05 · Community Hazard Map</span>
     <h2>Where Do These Hazards Show Up?</h2>
     <p>The <strong>Common SENSES Community Map</strong> visualizes resident-reported environmental concerns across Roxbury — heat, flooding, air pollution, noise, and more. Each dot represents a real community experience mapped directly from resident input.</p>
 
-    <div class="map-preview" onclick="window.open('https://www.commonsensesproject.org/community-stories','_blank')">
-      <div style="position:relative;">
-        <img src="https://nukporfesamuel7-ai.github.io/roxbury-participatory-modeling/map.jpg" 
-             alt="Common SENSES Community Hazard Map – Roxbury"
-             style="width:100%; display:block; border-radius:12px 12px 0 0; max-height:420px; object-fit:cover;">
-        <div class="map-click-overlay" style="border-radius:0 0 12px 12px;">
-          <span>🗺️ Click to open live interactive map → commonsensesproject.org</span>
-        </div>
+    <div class="map-box" onclick="window.open('https://www.commonsensesproject.org/community-stories','_blank')">
+      <img src="https://nukporfesamuel7-ai.github.io/roxbury-participatory-modeling/map.jpg" alt="Common SENSES Community Hazard Map">
+      <div class="map-overlay">
+        <span>🗺️ Click to open the live interactive map → commonsensesproject.org</span>
       </div>
     </div>
 
-    <div class="why-grid">
-      <div class="why-card"><div class="icon" style="color:#e74c3c;">🔴</div><h4>Heat Concerns</h4><p>Locations where residents report dangerously high temperatures, concentrated along major corridors in Dudley Street.</p></div>
-      <div class="why-card"><div class="icon" style="color:#3498db;">🔵</div><h4>Flooding Concerns</h4><p>Streets, parks, and residential areas that flood repeatedly during storms due to blocked drains and aging stormwater infrastructure.</p></div>
-      <div class="why-card"><div class="icon" style="color:#9b59b6;">🟣</div><h4>Air Pollution</h4><p>Areas with elevated air quality concerns, often intersecting with high-traffic corridors and proximity to industrial uses.</p></div>
-      <div class="why-card"><div class="icon" style="color:#f1c40f;">🟡</div><h4>Noise & Other Hazards</h4><p>Resident-reported noise, lighting, rodent, and construction concerns that compound environmental stress.</p></div>
+    <div class="hazard-grid">
+      <div class="hazard-item"><span class="hazard-dot" style="background:#e74c3c;"></span><div><h5>Heat Concerns</h5><p>Locations where residents report dangerously high temperatures, concentrated along major corridors in Dudley Street.</p></div></div>
+      <div class="hazard-item"><span class="hazard-dot" style="background:#3498db;"></span><div><h5>Flooding Concerns</h5><p>Streets, parks, and residential areas that flood repeatedly during storms due to blocked drains and aging infrastructure.</p></div></div>
+      <div class="hazard-item"><span class="hazard-dot" style="background:#9b59b6;"></span><div><h5>Air Pollution</h5><p>Areas with elevated air quality concerns, often intersecting with high-traffic corridors and industrial land uses.</p></div></div>
+      <div class="hazard-item"><span class="hazard-dot" style="background:#f39c12;"></span><div><h5>Noise &amp; Other Hazards</h5><p>Resident-reported noise, lighting, rodent, and construction concerns that compound environmental stress.</p></div></div>
     </div>
   </div>
 </section>
 
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<!-- ══════════════════ REFERENCES ══════════════════ -->
+<section id="references" style="background:#fff;padding:4rem 2rem;">
+  <div class="container">
+    <span class="eyebrow">References</span>
+    <h2>Works Cited</h2>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:2rem;">All references are drawn from the four workshop documents produced across this project: Problem Definition &amp; Stakeholder Mapping, Photovoice Proposal, CLD Proposal, and Fora.ai / L-GrID After-Workshop Report.</p>
 
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;">
 
+      <div>
+        <h3 style="font-size:.8rem;font-family:sans-serif;text-transform:uppercase;letter-spacing:1.5px;color:var(--teal);margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;">Environmental Justice &amp; Climate</h3>
+        <ul style="list-style:none;font-size:.8rem;line-height:1.9;color:#444;">
+          <li>Anguelovski, I. (2014). Stories of neighborhood abandonment, degradation, and transformation. In <em>Neighborhood as refuge</em> (pp. 55–97). MIT Press. <a href="https://doi.org/10.7551/mitpress/9780262026925.001.0001" target="_blank" style="color:var(--teal);">https://doi.org/10.7551/mitpress/9780262026925.001.0001</a></li>
+          <li style="margin-top:.8rem;">Hoffman, J. S., Shandas, V., &amp; Pendleton, N. (2020). The effects of historical housing policies on resident exposure to intra-urban heat. <em>Climate, 8</em>(1), 12. <a href="https://doi.org/10.3390/cli8010012" target="_blank" style="color:var(--teal);">https://doi.org/10.3390/cli8010012</a></li>
+          <li style="margin-top:.8rem;">Meerow, S., &amp; Newell, J. P. (2019). Urban resilience for whom, what, when, where, and why? <em>Urban Geography, 40</em>(3), 309–329. <a href="https://doi.org/10.1080/02723638.2016.1206395" target="_blank" style="color:var(--teal);">https://doi.org/10.1080/02723638.2016.1206395</a></li>
+          <li style="margin-top:.8rem;">O'Brien, D. T., &amp; Mueller, A. V. (2023). In pursuit of local solutions for climate resilience. <em>Sustainability, 15</em>(4), 2984. <a href="https://doi.org/10.3390/su15042984" target="_blank" style="color:var(--teal);">https://doi.org/10.3390/su15042984</a></li>
+          <li style="margin-top:.8rem;">Prevention Institute. (2020). <em>Stormwater, health, and equity</em> [Fact sheet]. <a href="https://www.preventioninstitute.org/sites/default/files/uploads/Stormwater%20Health%20and%20Equity%20Factsheet%20Feb%2020%202020.pdf" target="_blank" style="color:var(--teal);">preventioninstitute.org</a></li>
+          <li style="margin-top:.8rem;">Reidmiller, D. R., et al. (Eds.). (2018). <em>Impacts, risks, and adaptation in the United States: Fourth national climate assessment</em> (Vol. II). U.S. Global Change Research Program. <a href="https://doi.org/10.7930/NCA4.2018" target="_blank" style="color:var(--teal);">https://doi.org/10.7930/NCA4.2018</a></li>
+        </ul>
+      </div>
 
+      <div>
+        <h3 style="font-size:.8rem;font-family:sans-serif;text-transform:uppercase;letter-spacing:1.5px;color:var(--teal);margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;">Stakeholder Engagement</h3>
+        <ul style="list-style:none;font-size:.8rem;line-height:1.9;color:#444;">
+          <li>Bammer, G. (2021a, Oct 14). Defining stakeholders. <em>i2Insights.</em> <a href="https://i2insights.org/2021/10/14/defining-stakeholders/" target="_blank" style="color:var(--teal);">i2insights.org</a></li>
+          <li style="margin-top:.8rem;">Bammer, G. (2021b, Oct 21). Identifying stakeholders. <em>i2Insights.</em> <a href="https://i2insights.org/2021/10/21/identifying-stakeholders/" target="_blank" style="color:var(--teal);">i2insights.org</a></li>
+          <li style="margin-top:.8rem;">Bammer, G. (2021c, Oct 28). Selecting stakeholders. <em>i2Insights.</em> <a href="https://i2insights.org/2021/10/28/selecting-stakeholders/" target="_blank" style="color:var(--teal);">i2insights.org</a></li>
+          <li style="margin-top:.8rem;">Checkoway, B., &amp; Richards-Schuster, K. (2003). Youth participation in community evaluation research. <em>American Journal of Evaluation, 24</em>(1), 21–33.</li>
+          <li style="margin-top:.8rem;">Cooke, B., &amp; Kothari, U. (Eds.). (2001). <em>Participation: The new tyranny?</em> Zed Books.</li>
+          <li style="margin-top:.8rem;">Durham, E., Baker, H., Smith, M., Moore, E., &amp; Morgan, V. (2014). <em>BiodivERsA stakeholder engagement handbook.</em> ERA-NET BiodivERsA.</li>
+          <li style="margin-top:.8rem;">Mitchell, R. K., Agle, B. R., &amp; Wood, D. J. (1997). Toward a theory of stakeholder identification and salience. <em>Academy of Management Review, 22</em>(4), 853–886.</li>
+          <li style="margin-top:.8rem;">Reed, M. S. (2008). Stakeholder participation for environmental management. <em>Biological Conservation, 141</em>(10), 2417–2431.</li>
+          <li style="margin-top:.8rem;">Wallerstein, N., &amp; Duran, B. (2010). Community-based participatory research contributions to intervention research. <em>American Journal of Public Health, 100</em>(S1), S40–S46. <a href="https://doi.org/10.2105/AJPH.2009.184036" target="_blank" style="color:var(--teal);">https://doi.org/10.2105/AJPH.2009.184036</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 style="font-size:.8rem;font-family:sans-serif;text-transform:uppercase;letter-spacing:1.5px;color:var(--teal);margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;">Photovoice</h3>
+        <ul style="list-style:none;font-size:.8rem;line-height:1.9;color:#444;">
+          <li>Bell, S. E. (2008). Photovoice as a strategy for community organizing in the Central Appalachian Coalfields. <em>Journal of Appalachian Studies, 14</em>(1/2), 34–48.</li>
+          <li style="margin-top:.8rem;">Bell, S. E. (2015). Bridging activism and the academy: Exposing environmental injustices through the feminist ethnographic method of Photovoice. <em>Human Ecology Review, 21</em>(1), 27–58.</li>
+          <li style="margin-top:.8rem;">Photovoice. (n.d.). Chelsea and East Boston Heat Study. <a href="https://www.c-heatproject.org/photo-voice" target="_blank" style="color:var(--teal);">c-heatproject.org</a></li>
+          <li style="margin-top:.8rem;">Zellner, M. (n.d.). Workshop proposal: Photovoice in Coulibistrie, Dominica. Unpublished manuscript.</li>
+        </ul>
+
+        <h3 style="font-size:.8rem;font-family:sans-serif;text-transform:uppercase;letter-spacing:1.5px;color:var(--teal);margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;margin-top:1.8rem;">Causal Loop Diagramming</h3>
+        <ul style="list-style:none;font-size:.8rem;line-height:1.9;color:#444;">
+          <li>Barbrook-Johnson, P., &amp; Penn, A. S. (2022). Causal loop diagrams. In <em>Systems mapping.</em> Palgrave Macmillan. <a href="https://doi.org/10.1007/978-3-031-01919-7_4" target="_blank" style="color:var(--teal);">https://doi.org/10.1007/978-3-031-01919-7_4</a></li>
+          <li style="margin-top:.8rem;">Zellner, M., et al. (2023). Exploring the barriers to and potential for sustainable transitions in urban-rural systems through participatory causal loop diagramming. <em>Land, 12</em>(3), 551. <a href="https://doi.org/10.3390/land12030551" target="_blank" style="color:var(--teal);">https://doi.org/10.3390/land12030551</a></li>
+          <li style="margin-top:.8rem;">Voinov, A., &amp; Bousquet, F. (2010). Modelling with stakeholders. <em>Environmental Modelling &amp; Software, 25</em>(11), 1268–1281. <a href="https://doi.org/10.1016/j.envsoft.2010.11.011" target="_blank" style="color:var(--teal);">https://doi.org/10.1016/j.envsoft.2010.11.011</a></li>
+          <li style="margin-top:.8rem;">Voinov, A., et al. (2018). Tools and methods in participatory modeling: Selecting the right tool for the job. <em>Environmental Modelling &amp; Software, 109,</em> 232–255. <a href="https://doi.org/10.1016/j.envsoft.2018.08.028" target="_blank" style="color:var(--teal);">https://doi.org/10.1016/j.envsoft.2018.08.028</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 style="font-size:.8rem;font-family:sans-serif;text-transform:uppercase;letter-spacing:1.5px;color:var(--teal);margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.4rem;">Fora.ai / L-GrID &amp; Green Infrastructure</h3>
+        <ul style="list-style:none;font-size:.8rem;line-height:1.9;color:#444;">
+          <li>Zellner, M. (2024). Participatory modeling for collaborative landscape and environmental planning: From potential to realization. <em>Landscape and Urban Planning, 247,</em> 105063. <a href="https://doi.org/10.1016/j.landurbplan.2024.105063" target="_blank" style="color:var(--teal);">https://doi.org/10.1016/j.landurbplan.2024.105063</a></li>
+          <li style="margin-top:.8rem;">Zellner, M., Massey, D., Laboy, M., O'Brien, D., Mueller, A., &amp; Engelberg, D. (2025). Enhancing digital twin technology with community-led, science-driven participatory modeling. <em>Environment and Planning B: Urban Analytics and City Science.</em> <a href="https://doi.org/10.1177/23998083251323671" target="_blank" style="color:var(--teal);">https://doi.org/10.1177/23998083251323671</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
 
 <footer>
   <p>PPUA 5246 Participatory Modeling · Northeastern University · 2026</p>
-  <p style="margin-top:.4rem;">Community Partner: <a href="https://www.dsni.org" target="_blank">Dudley Street Neighborhood Initiative</a> · <a href="https://arcg.is/1rzGzK2" target="_blank">View StoryMap</a></p>
+  <p>Community Partner: <a href="https://www.dsni.org" target="_blank">Dudley Street Neighborhood Initiative</a> &nbsp;·&nbsp; <a href="https://arcg.is/1rzGzK2" target="_blank">View ArcGIS StoryMap</a></p>
 </footer>
 
 <script>
-  // Progress bar
-  window.addEventListener('scroll', () => {
-    const s = window.scrollY, t = document.body.scrollHeight - window.innerHeight;
-    document.getElementById('progress').style.width = (s/t*100)+'%';
+window.addEventListener('scroll',()=>{
+  const s=window.scrollY,t=document.body.scrollHeight-window.innerHeight;
+  document.getElementById('progress-bar').style.width=(s/t*100)+'%';
+});
+const sections=document.querySelectorAll('section[id]');
+const navLinks=document.querySelectorAll('.nav-links a');
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navLinks.forEach(a=>a.classList.remove('active'));
+      const l=document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+      if(l)l.classList.add('active');
+    }
   });
-
-  // Tab switching
-  function showTab(id, _, btn) {
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    btn.classList.add('active');
-  }
-
-  // Images loaded directly from GitHub Pages — no placeholders needed
+},{threshold:.35});
+sections.forEach(s=>obs.observe(s));
 </script>
 </body>
 </html>
